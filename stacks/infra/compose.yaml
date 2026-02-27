@@ -1,0 +1,23 @@
+services:
+  adguardhome:
+    container_name: adguardhome
+    restart: unless-stopped
+    volumes:
+      - /docker/networking/adguard/work:/opt/adguardhome/work
+      - /docker/networking/adguard/conf:/opt/adguardhome/conf
+    network_mode: host
+    image: adguard/adguardhome
+    
+  homebridge:
+    container_name: homebridge
+    image: homebridge/homebridge:latest
+    restart: always
+    network_mode: host
+    volumes:
+      - /docker/networking/homebridge/homebridge:/homebridge
+    logging:
+      driver: json-file
+      options:
+        max-size: "10mb"
+        max-file: "1"
+

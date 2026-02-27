@@ -1,0 +1,186 @@
+services:
+  plex:
+    image: lscr.io/linuxserver/plex:latest
+    container_name: plex
+    network_mode: host
+    environment:
+      - PUID=${PUID}
+      - PGID=${PGID}
+      - TZ=${TZ}
+      - VERSION=${VERSION}
+    volumes:
+      - /docker/media/plex:/config
+      - /mnt/nas/data/media:/media
+    devices:
+      - /dev/dri:/dev/dri
+    restart: unless-stopped
+
+  jellyfin:
+    image: lscr.io/linuxserver/jellyfin:latest
+    container_name: jellyfin
+    environment:
+      - PUID=${PUID}
+      - PGID=${PGID}
+      - TZ=${TZ}
+      - DOCKER_MODS=linuxserver/mods:jellyfin-opencl-intel # optional, set to enable hardware acceleration for Intel GPUs
+    volumes:
+      - /docker/media/jellyfin:/config
+      - /docker/media/jellyfin/cache:/cache
+      - /mnt/nas/data/media:/media:ro
+    devices:
+      - /dev/dri:/dev/dri
+    ports:
+      - 8096:8096
+    restart: unless-stopped
+    networks: [proxy]
+
+  sonarr-anime:
+    image: lscr.io/linuxserver/sonarr:latest
+    container_name: sonarr-anime
+    environment:
+      - PUID=${PUID}
+      - PGID=${PGID}
+      - TZ=${TZ}
+    volumes:
+      - /docker/media/sonarr/sonarr-anime:/config
+      - /mnt/nas/data/media/anime:/media/anime
+      - /mnt/nas/data/torrents:/torrents
+    ports:
+      - 8989:8989
+    restart: unless-stopped
+    networks: [proxy]
+
+  sonarr-tv:
+    image: lscr.io/linuxserver/sonarr:latest
+    container_name: sonarr-tv
+    environment:
+      - PUID=${PUID}
+      - PGID=${PGID}
+      - TZ=${TZ}
+    volumes:
+      - /docker/media/sonarr/sonarr-tv:/config
+      - /mnt/nas/data/media/tv:/media/tv
+      - /mnt/nas/data/torrents:/torrents
+    ports:
+      - 8990:8990
+    restart: unless-stopped
+    networks: [proxy]
+
+  radarr:
+    image: lscr.io/linuxserver/radarr:latest
+    container_name: radarr
+    environment:
+      - PUID=${PUID}
+      - PGID=${PGID}
+      - TZ=${TZ}
+    volumes:
+      - /docker/media/radarr:/config
+      - /mnt/nas/data/media/movies:/media/movies
+      - /mnt/nas/data/media/anime-movies:/media/anime-movies
+      - /mnt/nas/data/torrents:/torrents
+    ports:
+      - 7878:7878
+    restart: unless-stopped
+    networks: [proxy]
+
+  prowlarr:
+    image: lscr.io/linuxserver/prowlarr:latest
+    container_name: prowlarr
+    environment:
+      - PUID=${PUID}
+      - PGID=${PGID}
+      - TZ=${TZ}
+      - DOTNET_SYSTEM_NET_DISABLEIPV6=1 # optional, set to 1 to disable IPv6
+    volumes:
+      - /docker/media/prowlarr:/config
+    ports:
+      - 9696:9696
+    restart: unless-stopped
+    networks: [proxy]
+
+  flaresolverr:
+    image: ghcr.io/flaresolverr/flaresolverr:latest
+    container_name: flaresolverr
+    environment:
+      - PUID=${PUID}
+      - PGID=${PGID}
+      - TZ=${TZ}
+      - LOG_LEVEL=${LOG_LEVEL:-info}
+      - LOG_HTML=${LOG_HTML:-false}
+      - CAPTCHA_SOLVER=${CAPTCHA_SOLVER:-none}
+    ports:
+      - "${PORT:-8191}:8191"
+    restart: unless-stopped
+    networks: [proxy]
+
+  seerr:
+    image: ghcr.io/seerr-team/seerr:latest
+    init: true
+    container_name: seerr
+    environment:
+      - PUID=${PUID}
+      - PGID=${PGID}
+      - TZ=${TZ}
+      - LOG_LEVEL=debug
+    ports:
+      - 5055:5055
+    volumes:
+      - /docker/media/seerr:/app/config
+    healthcheck:
+      test: wget --no-verbose --tries=1 --spider http://localhost:5055/api/v1/status || exit 1
+      start_period: 20s
+      timeout: 3s
+      interval: 15s
+      retries: 3
+    restart: unless-stopped
+    networks: [proxy]
+
+  plexautolanguages:
+    image: journeyover/plex-auto-languages:latest
+    container_name: palang
+    environment:
+      - PUID=${PUID}
+      - PGID=${PGID}
+      - TZ=${TZ}
+      - PLEX_URL=${PLEX_URL}
+      - PLEX_TOKEN=${PLEX_TOKEN}
+    volumes:
+      - /docker/media/palang:/config
+    restart: unless-stopped
+    networks: [proxy]
+
+  watchstate:
+    image: ghcr.io/arabcoders/watchstate:latest
+    # To change the user/group id associated with the tool change the following line.
+    user: "0:0"
+    container_name: watchstate
+    restart: unless-stopped
+    ports:
+        - "8081:8080" # Interal 8080 taken by qbittorrent, so remap to 8081
+    volumes:
+        - /docker/media/watchstate/data:/config:rw
+    networks: [proxy]
+
+  agregarr:
+    image: agregarr/agregarr:latest
+    container_name: agregarr
+    volumes:
+      - /docker/media/agregarr/config:/app/config
+
+      # Optional: For Coming Soon/Placeholder feature
+      # - /path/to/placeholder/movies:/data/movies
+      # - /path/to/placeholder/tv:/data/tv
+
+      # And then select your root folders in Settings -> Downloads
+    environment:
+      - PUID=${PUID}
+      - PGID=${PGID}
+      - TZ=${TZ}
+    ports:
+      - 7171:7171
+    restart: unless-stopped
+    networks: [proxy]
+
+networks:
+  proxy:
+    external: true
