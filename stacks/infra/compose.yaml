@@ -45,7 +45,7 @@ services:
     ports:
       - 127.0.0.1:8080:8080
     environment:
-      COLLECTIONS: "crowdsecurity/nginx"
+      COLLECTIONS: "crowdsecurity/linux crowdsecurity/nginx crowdsecurity/sshd"
       GID: "${GID-1000}"
     depends_on:
       - "nginx-proxy-manager"
