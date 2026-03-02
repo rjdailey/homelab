@@ -7,7 +7,7 @@ services:
       - /docker/networking/adguard/conf:/opt/adguardhome/conf
     network_mode: host
     image: adguard/adguardhome
-    
+
   homebridge:
     container_name: homebridge
     image: homebridge/homebridge:latest
@@ -37,6 +37,23 @@ services:
       - /docker/networking/nginx/data:/data
       - /docker/networking/nginx/letsencrypt:/etc/letsencrypt
     networks: [proxy]
+
+  crowdsec:
+    container_name: crowdsec
+    image: crowdsecurity/crowdsec
+    restart: always
+    ports:
+      - 127.0.0.1:8080:8080
+    environment:
+      COLLECTIONS: "crowdsecurity/nginx"
+      GID: "${GID-1000}"
+    depends_on:
+      - "nginx"
+    volumes:
+      - ./crowdsec/acquis.yaml:/etc/crowdsec/acquis.yaml
+      - /docker/networking/nginx/data/logs:/var/log/nginx
+      - /docker/networking/crowdsec/data:/var/lib/crowdsec/data/
+      - /docker/networking/crowdsec/config:/etc/crowdsec/
 
 networks:
   proxy:
