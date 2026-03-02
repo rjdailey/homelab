@@ -48,7 +48,7 @@ services:
       COLLECTIONS: "crowdsecurity/nginx"
       GID: "${GID-1000}"
     depends_on:
-      - "nginx"
+      - "nginx-proxy-manager"
     volumes:
       - ./crowdsec/acquis.yaml:/etc/crowdsec/acquis.yaml
       - /docker/networking/nginx/data/logs:/var/log/nginx
