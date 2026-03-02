@@ -25,7 +25,7 @@ services:
       - PUID=${PUID}
       - PGID=${PGID}
       - TZ=${TZ}
-      - WEBUI_PORT=8080
+      - WEBUI_PORT=8083
       - TORRENTING_PORT=6881
       - DOCKER_MODS=ghcr.io/vuetorrent/vuetorrent-lsio-mod:latest # optional, set to enable Vuetorrent mod
     volumes:
@@ -48,7 +48,7 @@ services:
       - 8388:8388/tcp # Shadowsocks
       - 8388:8388/udp # Shadowsocks
       # qBittorrent
-      - 8080:8080 # WebUI
+      - 8083:8080 # WebUI
       - 6881:6881 # Torrenting port
       - 6881:6881/udp
     volumes:
