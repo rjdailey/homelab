@@ -48,7 +48,7 @@ services:
       - 8388:8388/tcp # Shadowsocks
       - 8388:8388/udp # Shadowsocks
       # qBittorrent
-      - 8083:8080 # WebUI
+      - 8083:8083 # WebUI
       - 6881:6881 # Torrenting port
       - 6881:6881/udp
     volumes:
