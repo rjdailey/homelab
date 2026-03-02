@@ -50,8 +50,8 @@ services:
     depends_on:
       - "nginx-proxy-manager"
     volumes:
-      - ./crowdsec/acquis.yaml:/etc/crowdsec/acquis.yaml
-      - /docker/networking/nginx/data/logs:/var/log/nginx
+      - /var/log/auth.log:/var/log/auth.log:ro
+      - /docker/networking/nginx/data/logs:/var/log/nginx:ro
       - /docker/networking/crowdsec/data:/var/lib/crowdsec/data/
       - /docker/networking/crowdsec/config:/etc/crowdsec/
 
