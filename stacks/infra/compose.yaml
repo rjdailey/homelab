@@ -38,23 +38,6 @@ services:
       - /docker/networking/nginx/letsencrypt:/etc/letsencrypt
     networks: [proxy]
 
-  crowdsec:
-    container_name: crowdsec
-    image: crowdsecurity/crowdsec
-    restart: always
-    ports:
-      - 127.0.0.1:8080:8080
-    environment:
-      COLLECTIONS: "crowdsecurity/linux crowdsecurity/nginx crowdsecurity/sshd"
-      GID: "${GID-1000}"
-    depends_on:
-      - "nginx-proxy-manager"
-    volumes:
-      - /var/log/auth.log:/var/log/auth.log:ro
-      - /docker/networking/nginx/data/logs:/var/log/nginx:ro
-      - /docker/networking/crowdsec/data:/var/lib/crowdsec/data/
-      - /docker/networking/crowdsec/config:/etc/crowdsec/
-
 networks:
   proxy:
     external: true
