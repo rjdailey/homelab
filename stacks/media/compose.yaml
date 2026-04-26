@@ -183,7 +183,7 @@ services:
 
   gluetun:
     image: qmcgaw/gluetun
-    container_name: gluetun
+    container_name: gluetun_media
     # line above must be uncommented to allow external containers to connect.
     # See https://github.com/qdm12/gluetun-wiki/blob/main/setup/connect-a-container-to-gluetun.md#external-container-to-gluetun
     cap_add:
