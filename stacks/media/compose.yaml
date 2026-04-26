@@ -93,10 +93,8 @@ services:
       - DOTNET_SYSTEM_NET_DISABLEIPV6=1 # optional, set to 1 to disable IPv6
     volumes:
       - /docker/media/prowlarr:/config
-    ports:
-      - 9696:9696
     restart: unless-stopped
-    networks: [proxy]
+    network_mode: "service:gluetun"
 
   flaresolverr:
     image: ghcr.io/flaresolverr/flaresolverr:latest
@@ -197,7 +195,7 @@ services:
       # Prowlarr
       - 9696:9696
     volumes:
-      - /docker/downloads/gluetun:/gluetun
+      - /docker/media/gluetun:/gluetun
     environment:
       - PUID=${PUID}
       - PGID=${PGID}
