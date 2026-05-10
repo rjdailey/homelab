@@ -1,13 +1,20 @@
 # Homelab
 
-Production-grade self-hosted infrastructure running on a single-node Debian server. Managed
+Production-grade self-hosted infrastructure running on a single-node Debian server, managed
 via GitOps with full observability, centralized log aggregation, zero-trust networking, and
 automated alerting.
+
+<p align="center">
+  <img src="docs/photos/rack.jpg" width="450"/>
+  <br/>
+  <em>8U rack — Unifi switch, Cloud Gateway, Intel N150 mini PC, DAS (45TB)</em>
+</p>
 
 ## Hardware
 
 | Component | Specification                             |
 |-----------|-------------------------------------------|
+| Rack      | 8U 10" Open Frame
 | CPU       | Intel N150                                |
 | RAM       | 32GB DDR4                                 |
 | OS        | Debian 13 (Trixie)                        |
@@ -49,8 +56,10 @@ automated alerting.
 
 ## Dashboards
 
-![Grafana Node Exporter](docs/screenshots/grafana-node-exporter.png)
-![Uptime Kuma](docs/screenshots/uptime-kuma.png)
+<p align="center">
+  <img src="docs/screenshots/grafana-node-exporter.png" width="49%"/>
+  <img src="docs/screenshots/uptime-kuma.png" width="49%"/>
+</p>
 
 ## Infrastructure
 
@@ -66,24 +75,17 @@ automated alerting.
 - **Secret Management** — Secrets are never committed to the repository. `.env` files are
   gitignored and managed on the host. `.env.example` files document required variables per
   stack. Application data is stored at `/opt/appdata` on the host, outside the repository.
+- **Security** — SSH key-only auth, UFW firewall, no secrets in version 
+  control, host networking limited to services that require it.
 
 ## Storage
 
-- **Pooling** — mergerFS combines physical disks into a single mount at `/mnt/nas` using a
-  most-free-space allocation policy to balance writes across the array.
-- **Parity** — SnapRAID provides snapshot-based parity protecting against single drive failure.
-  Syncs run on a schedule via snapraid-runner with safety thresholds to prevent accidental
-  data loss.
+- **Storage** — mergerFS pools physical disks at `/mnt/nas` with 
+  most-free-space allocation. SnapRAID provides single-drive parity 
+  via snapraid-runner with safety thresholds. App data lives on the 
+  host SSD at `/opt/appdata` for fast random I/O.
 - **Layout** — Media and torrent data live on the DAS at `/mnt/nas`. Application config and
   metadata live on the host SSD at `/opt/appdata` for fast random I/O.
-
-## Security
-
-- SSH key-only authentication, password auth disabled
-- UFW firewall with strict ingress rules
-- Zero-trust remote access via Tailscale
-- Host networking limited to services that require it
-- No secrets in version control
 
 ## Repository Structure
 
