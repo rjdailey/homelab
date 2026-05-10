@@ -1,0 +1,95 @@
+services:
+  sonarr-anime:
+    image: lscr.io/linuxserver/sonarr:latest
+    container_name: sonarr-anime
+    environment:
+      - PUID=1000
+      - PGID=1000
+      - TZ=America/Chicago
+    volumes:
+      - /opt/appdata/sonarr/anime:/config
+      - /mnt/nas/data/media/anime:/media/anime
+      - /mnt/nas/data/torrents:/torrents
+    ports:
+      - 8989:8989
+    restart: unless-stopped
+    networks: [proxy]
+
+  sonarr-tv:
+    image: lscr.io/linuxserver/sonarr:latest
+    container_name: sonarr-tv
+    environment:
+      - PUID=1000
+      - PGID=1000
+      - TZ=America/Chicago
+    volumes:
+      - /opt/appdata/sonarr/tv:/config
+      - /mnt/nas/data/media/tv:/media/tv
+      - /mnt/nas/data/torrents:/torrents
+    ports:
+      - 8990:8990
+    restart: unless-stopped
+    networks: [proxy]
+
+  radarr:
+    image: lscr.io/linuxserver/radarr:latest
+    container_name: radarr
+    environment:
+      - PUID=1000
+      - PGID=1000
+      - TZ=America/Chicago
+    volumes:
+      - /opt/appdata/radarr:/config
+      - /mnt/nas/data/media/movies:/media/movies
+      - /mnt/nas/data/media/anime-movies:/media/anime-movies
+      - /mnt/nas/data/torrents:/torrents
+    ports:
+      - 7878:7878
+    restart: unless-stopped
+    networks: [proxy]
+
+  seerr:
+    image: ghcr.io/seerr-team/seerr:latest
+    init: true
+    container_name: seerr
+    environment:
+      - PUID=1000
+      - PGID=1000
+      - TZ=America/Chicago
+      - LOG_LEVEL=debug
+    ports:
+      - 5055:5055
+    volumes:
+      - /opt/appdata/seerr:/app/config
+    healthcheck:
+      test: wget --no-verbose --tries=1 --spider http://localhost:5055/api/v1/status || exit 1
+      start_period: 20s
+      timeout: 3s
+      interval: 15s
+      retries: 3
+    restart: unless-stopped
+    networks: [proxy]
+
+  agregarr:
+    image: agregarr/agregarr:latest
+    container_name: agregarr
+    volumes:
+      - /opt/appdata/agregarr/:/app/config
+
+      # Optional: For Coming Soon/Placeholder feature
+      # - /path/to/placeholder/movies:/data/movies
+      # - /path/to/placeholder/tv:/data/tv
+
+      # And then select your root folders in Settings -> Downloads
+    environment:
+      - PUID=1000
+      - PGID=1000
+      - TZ=America/Chicago
+    ports:
+      - 7171:7171
+    restart: unless-stopped
+    networks: [proxy]
+
+networks:
+  proxy:
+    external: true
