@@ -1,0 +1,39 @@
+- logo:
+    icon: mdi-server-network-outline
+
+- greeting:
+    text_size: xl
+    text: "nas.local"
+
+- resources:
+    expanded: false
+    cpu: true
+    cputemp: true
+    memory: true
+    refresh: 3000
+
+- datetime:
+    text_size: xl
+    format:
+      timeStyle: short
+      hour12: false
+
+- datetime:
+    text_size: sm
+    format:
+      dateStyle: long
+
+- search:
+    provider: google
+    focus: false
+    target: _blank
+
+- openmeteo:
+    label: Memphis
+    latitude: 35.1495
+    longitude: -90.0490
+    timezone: America/Chicago
+    units: imperial
+    cache: 5
+    format:
+      maximumFractionDigits: 0

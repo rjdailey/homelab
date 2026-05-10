@@ -1,0 +1,50 @@
+title: nas/Homepage
+language: en
+theme: dark
+color: zinc
+target: _self
+headerStyle: boxed
+statusStyle: dot
+hideVersion: true
+disableCollapse: true
+
+background:
+  color:
+    dark: "#0d1117"
+    light: "#f6f8fa"
+
+layout:
+  # HOME tab
+  Infrastructure:
+    style: column
+    tab: HOME
+    icon: mdi-server
+  Media:
+    style: column
+    tab: HOME
+    icon: mdi-television-play
+  Arr:
+    style: column
+    tab: HOME
+    icon: mdi-download-circle
+  Downloads:
+    style: column
+    tab: HOME
+    icon: mdi-cloud-download
+  Networking:
+    style: column
+    tab: HOME
+    icon: mdi-network
+  _hidden0:
+    style: column
+    tab: HOME
+
+  # STAT tab
+  Monitoring:
+    style: column
+    tab: STAT
+    icon: mdi-chart-line
+  Storage:
+    style: column
+    tab: STAT
+    icon: mdi-harddisk

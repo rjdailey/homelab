@@ -1,0 +1,13 @@
+---
+# For configuration options and examples, please see:
+# https://gethomepage.dev/configs/bookmarks
+
+- _hidden0:
+    - GitHub:
+      - icon: github
+        href: https://github.com/rjdailey/homelab
+        description: ⠀
+    - Tailscale:
+      - icon: tailscale
+        href: https://login.tailscale.com/admin
+        description: ⠀

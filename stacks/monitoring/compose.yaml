@@ -85,10 +85,13 @@ services:
     volumes:
       - ./homepage:/app/config
       - /var/run/docker.sock:/var/run/docker.sock:ro
+      - /mnt/nas:/mnt/nas:ro
     environment:
       HOMEPAGE_ALLOWED_HOSTS: 192.168.1.35:3003
       PUID: 1000
       PGID: 1000
+    env_file:
+      - .env
     networks: [proxy]
 
 networks:

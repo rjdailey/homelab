@@ -1,0 +1,187 @@
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&display=swap');
+
+* {
+  font-family: 'Inter', sans-serif !important;
+}
+
+:root {
+  --hp-bg: #0d1117;
+  --hp-surface: #161b22;
+  --hp-border: #21262d;
+  --hp-text: #e6edf3;
+  --hp-muted: #8b949e;
+  --hp-accent: #58a6ff;
+  --hp-green: #3fb950;
+  --hp-red: #f85149;
+  --hp-amber: #d29922;
+  --hp-radius: 10px;
+}
+
+body,
+#wrapper,
+#page_container {
+  background-color: var(--hp-bg) !important;
+}
+
+#header_wrapper {
+  background: var(--hp-bg) !important;
+  border-bottom: 1px solid var(--hp-border) !important;
+  padding-bottom: 16px !important;
+}
+
+.information-widget-greeting span {
+  color: var(--hp-text) !important;
+  font-weight: 600 !important;
+  letter-spacing: -0.5px !important;
+}
+
+.information-widget-greeting span em {
+  color: var(--hp-accent) !important;
+  font-style: normal !important;
+}
+
+#searchInput {
+  background: var(--hp-surface) !important;
+  border: 1px solid var(--hp-border) !important;
+  border-radius: 8px !important;
+  color: var(--hp-text) !important;
+  font-size: 14px !important;
+}
+
+#searchInput:focus {
+  border-color: var(--hp-accent) !important;
+  outline: none !important;
+}
+
+#myTab {
+  background: transparent !important;
+  border-bottom: 1px solid var(--hp-border) !important;
+  gap: 4px !important;
+  padding: 0 !important;
+  margin-bottom: 24px !important;
+}
+
+button[id$='-tab'] {
+  background: transparent !important;
+  border: none !important;
+  border-bottom: 2px solid transparent !important;
+  border-radius: 0 !important;
+  color: var(--hp-muted) !important;
+  font-size: 13px !important;
+  font-weight: 500 !important;
+  padding: 8px 16px !important;
+  transition: color 0.15s, border-color 0.15s !important;
+}
+
+button[id$='-tab']:hover {
+  color: var(--hp-text) !important;
+  border-bottom-color: var(--hp-border) !important;
+}
+
+button[id$='-tab'][aria-selected="true"] {
+  color: var(--hp-text) !important;
+  border-bottom-color: var(--hp-accent) !important;
+}
+
+.services-group h2 {
+  font-size: 11px !important;
+  font-weight: 600 !important;
+  text-transform: uppercase !important;
+  letter-spacing: 1px !important;
+  color: var(--hp-muted) !important;
+  display: flex !important;
+  align-items: center !important;
+  gap: 6px !important;
+}
+
+.services-group h2::before {
+  content: '' !important;
+  display: inline-block !important;
+  width: 3px !important;
+  height: 12px !important;
+  border-radius: 2px !important;
+  background: var(--hp-accent) !important;
+  flex-shrink: 0 !important;
+}
+
+.service-card {
+  background: var(--hp-surface) !important;
+  border: 1px solid var(--hp-border) !important;
+  border-radius: var(--hp-radius) !important;
+  transition: border-color 0.15s, background 0.15s !important;
+}
+
+.service-card:hover {
+  border-color: var(--hp-accent) !important;
+  background: #1c2128 !important;
+}
+
+.service-title {
+  color: var(--hp-text) !important;
+  font-size: 13px !important;
+  font-weight: 500 !important;
+}
+
+.service-description {
+  color: var(--hp-muted) !important;
+  font-size: 11px !important;
+}
+
+.service-tag {
+  background: var(--hp-border) !important;
+  color: var(--hp-muted) !important;
+  border-radius: 4px !important;
+  font-size: 10px !important;
+}
+
+.service-block {
+  background: transparent !important;
+  border-top: 1px solid var(--hp-border) !important;
+}
+
+.service-block span {
+  color: var(--hp-accent) !important;
+  font-size: 12px !important;
+  font-weight: 500 !important;
+}
+
+.service-block div {
+  color: var(--hp-muted) !important;
+  font-size: 10px !important;
+  text-transform: uppercase !important;
+  letter-spacing: 0.3px !important;
+}
+
+.status-dot {
+  background: var(--hp-green) !important;
+}
+
+.status-dot.danger {
+  background: var(--hp-red) !important;
+}
+
+.status-dot.warning {
+  background: var(--hp-amber) !important;
+}
+
+.bookmark-group-name {
+  font-size: 11px !important;
+  font-weight: 600 !important;
+  text-transform: uppercase !important;
+  letter-spacing: 1px !important;
+  color: var(--hp-muted) !important;
+}
+
+.bookmark-icon {
+  background: var(--hp-border) !important;
+  border-radius: 6px !important;
+}
+
+.resource-value {
+  color: var(--hp-accent) !important;
+  font-weight: 500 !important;
+}
+
+#footer {
+  display: none !important;
+}

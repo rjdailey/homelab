@@ -1,0 +1,128 @@
+- Infrastructure:
+    - AdGuard Home:
+        icon: adguard-home
+        href: http://adguard.home/
+        description: DNS & ad blocking
+        widget:
+          type: adguard
+          url: http://192.168.1.35:8000
+          username: {{HOMEPAGE_VAR_ADGUARD_USER}}
+          password: {{HOMEPAGE_VAR_ADGUARD_PASSWORD}}
+
+    - NGINX Proxy Manager:
+        icon: nginx-proxy-manager
+        href: http://nginx.home/
+        description: Reverse proxy & SSL
+
+    - Grafana:
+        icon: grafana
+        href: http://192.168.1.35:3000
+        description: Metrics & dashboards
+
+    - Uptime Kuma:
+        icon: uptime-kuma
+        href: http://192.168.1.35:3001
+        description: Service uptime
+        widget:
+          type: uptimekuma
+          url: http://192.168.1.35:3001
+          slug: homelab
+
+    - Komodo:
+        icon: mdi-source-branch
+        href: http://komodo.home/
+        description: GitOps orchestration
+
+    - Prometheus:
+        icon: prometheus
+        href: http://192.168.1.35:9090
+        description: Metrics collection
+
+- Media:
+    - Plex:
+        icon: plex
+        href: http://plex.home/
+        description: Media server
+        widget:
+          type: plex
+          url: http://192.168.1.35:32400
+          key: {{HOMEPAGE_VAR_PLEX_TOKEN}}
+
+    - Jellyfin:
+        icon: jellyfin
+        href: http://jellyfin.home/
+        description: Media server
+
+    - Seerr:
+        icon: jellyseerr
+        href: http://seerr.home/
+        description: Media requests
+        widget:
+          type: jellyseerr
+          url: http://192.168.1.35:5055
+          key: {{HOMEPAGE_VAR_SEERR_API_KEY}}
+
+- Arr:
+    - Sonarr TV:
+        icon: sonarr
+        href: http://tv.home/
+        description: TV show management
+        widget:
+          type: sonarr
+          url: http://192.168.1.35:8990
+          key: {{HOMEPAGE_VAR_SONARR_TV_API_KEY}}
+
+    - Sonarr Anime:
+        icon: sonarr
+        href: http://anime.home/
+        description: Anime management
+        widget:
+          type: sonarr
+          url: http://192.168.1.35:8989
+          key: {{HOMEPAGE_VAR_SONARR_ANIME_API_KEY}}
+          enableQueue: true
+
+    - Radarr:
+        icon: radarr
+        href: http://radarr.home/
+        description: Movie management
+        widget:
+          type: radarr
+          url: http://192.168.1.35:7878
+          key: {{HOMEPAGE_VAR_RADARR_API_KEY}}
+
+    - Prowlarr:
+        icon: prowlarr
+        href: http://prowlarr.home/
+        description: Indexer manager
+        widget:
+          type: prowlarr
+          url: http://192.168.1.35:9696
+          key: {{HOMEPAGE_VAR_PROWLARR_API_KEY}}
+
+- Downloads:
+    - qBittorrent:
+        icon: qbittorrent
+        href: http://qbittorrent.home/
+        description: Torrent client
+        widget:
+          type: qbittorrent
+          url: http://192.168.1.35:8083
+          username: {{HOMEPAGE_VAR_QBIT_USER}}
+          password: {{HOMEPAGE_VAR_QBIT_PASSWORD}}
+
+    - RDTClient:
+        icon: rdt-client
+        href: http://rdt.home/
+        description: Real-debrid client
+        widget:
+          type: qbittorrent
+          url: http://192.168.1.35:6500
+          username: {{HOMEPAGE_VAR_RDT_USER}}
+          password: {{HOMEPAGE_VAR_RDT_PASSWORD}}
+
+- Networking:
+    - Homebridge:
+        icon: homebridge
+        href: http://192.168.1.35:8581
+        description: HomeKit bridge
