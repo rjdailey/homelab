@@ -1,16 +1,25 @@
 services:
   adguardhome:
+    cap_drop:
+      - ALL
+    image: adguard/adguardhome
     container_name: adguardhome
-    restart: unless-stopped
     volumes:
       - /opt/appdata/adguard/work:/opt/adguardhome/work
       - /opt/appdata/adguard/conf:/opt/adguardhome/conf
     network_mode: host
-    image: adguard/adguardhome
+    healthcheck:
+      test: ["CMD", "wget", "-qO-", "http://localhost:3000"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+    restart: unless-stopped
 
   homebridge:
-    container_name: homebridge
+    cap_drop:
+      - ALL
     image: homebridge/homebridge:latest
+    container_name: homebridge
     restart: always
     network_mode: host
     volumes:
@@ -22,6 +31,8 @@ services:
         max-file: "1"
 
   nginx-proxy-manager:
+    cap_drop:
+      - ALL
     image: 'jc21/nginx-proxy-manager:latest'
     container_name: nginx
     restart: unless-stopped

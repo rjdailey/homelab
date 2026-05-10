@@ -1,5 +1,7 @@
 services:
   plex:
+    cap_drop:
+      - ALL
     image: lscr.io/linuxserver/plex:latest
     container_name: plex
     environment:
@@ -24,6 +26,8 @@ services:
     networks: [proxy]
 
   jellyfin:
+    cap_drop:
+      - ALL
     image: lscr.io/linuxserver/jellyfin:latest
     container_name: jellyfin
     environment:
@@ -43,6 +47,8 @@ services:
     networks: [proxy]
 
   plexautolanguages:
+    cap_drop:
+      - ALL
     image: journeyover/plex-auto-languages:latest
     container_name: palang
     environment:
@@ -57,6 +63,8 @@ services:
     restart: unless-stopped
 
   watchstate:
+    cap_drop:
+      - ALL
     image: ghcr.io/arabcoders/watchstate:latest
     # To change the user/group id associated with the tool change the following line.
     user: "0:0"

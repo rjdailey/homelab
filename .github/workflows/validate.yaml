@@ -48,9 +48,9 @@ jobs:
             checkmarx/kics:latest scan \
             -p /path/stacks \
             -t DockerCompose \
-            --exclude-paths /path/stacks/monitoring/homepage \
-            --ignore-on-exit results \
-            --no-progress
+            --config /path/.kics.config \
+            --no-progress \
+            --fail-on high,critical
 
   deploy:
     needs: validate

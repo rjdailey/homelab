@@ -1,5 +1,7 @@
 services:
   sonarr-anime:
+    cap_drop:
+      - ALL
     image: lscr.io/linuxserver/sonarr:latest
     container_name: sonarr-anime
     environment:
@@ -16,6 +18,8 @@ services:
     networks: [proxy]
 
   sonarr-tv:
+    cap_drop:
+      - ALL
     image: lscr.io/linuxserver/sonarr:latest
     container_name: sonarr-tv
     environment:
@@ -32,6 +36,8 @@ services:
     networks: [proxy]
 
   radarr:
+    cap_drop:
+      - ALL
     image: lscr.io/linuxserver/radarr:latest
     container_name: radarr
     environment:
@@ -49,6 +55,8 @@ services:
     networks: [proxy]
 
   seerr:
+    cap_drop:
+      - ALL
     image: ghcr.io/seerr-team/seerr:latest
     init: true
     container_name: seerr
@@ -71,6 +79,8 @@ services:
     networks: [proxy]
 
   agregarr:
+    cap_drop:
+      - ALL
     image: agregarr/agregarr:latest
     container_name: agregarr
     volumes:
