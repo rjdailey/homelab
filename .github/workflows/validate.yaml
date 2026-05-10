@@ -41,22 +41,16 @@ jobs:
             fi
           done
 
-      - name: Security checks
+      - name: Run KICS scan
         run: |
-          echo "=== Privileged containers ==="
-          grep -rn "privileged: true" stacks/ || echo "none found"
-
-          echo "=== Host network mode ==="
-          grep -rn "network_mode: host" stacks/ || echo "none found"
-
-          echo "=== Docker socket mounts ==="
-          grep -rn "docker.sock" stacks/ || echo "none found"
-
-          echo "=== Capabilities added ==="
-          grep -rn "cap_add" stacks/ || echo "none found"
-
-          echo "=== Shell access enabled ==="
-          grep -rn "ENABLE_SHELL=true" stacks/ || echo "none found"
+          docker run --rm \
+            -v ${{ github.workspace }}:/path \
+            checkmarx/kics:latest scan \
+            -p /path/stacks \
+            -t DockerCompose \
+            --exclude-paths /path/stacks/monitoring/homepage \
+            --ignore-on-exit results \
+            --no-progress
 
   deploy:
     needs: validate
