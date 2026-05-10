@@ -3,10 +3,10 @@ services:
     image: lscr.io/linuxserver/plex:latest
     container_name: plex
     environment:
-      - PUID=${PUID}
-      - PGID=${PGID}
-      - TZ=${TZ}
-      - VERSION=${VERSION}
+      - PUID=1000
+      - PGID=1000
+      - TZ=America/Chicago
+      - VERSION=latest
     volumes:
       - /docker/media/plex:/config
       - /mnt/nas/data/media:/media
@@ -27,9 +27,9 @@ services:
     image: lscr.io/linuxserver/jellyfin:latest
     container_name: jellyfin
     environment:
-      - PUID=${PUID}
-      - PGID=${PGID}
-      - TZ=${TZ}
+      - PUID=1000
+      - PGID=1000
+      - TZ=America/Chicago
       - DOCKER_MODS=linuxserver/mods:jellyfin-opencl-intel # optional, set to enable hardware acceleration for Intel GPUs
     volumes:
       - /docker/media/jellyfin:/config
@@ -46,9 +46,9 @@ services:
     image: lscr.io/linuxserver/sonarr:latest
     container_name: sonarr-anime
     environment:
-      - PUID=${PUID}
-      - PGID=${PGID}
-      - TZ=${TZ}
+      - PUID=1000
+      - PGID=1000
+      - TZ=America/Chicago
     volumes:
       - /docker/media/sonarr/sonarr-anime:/config
       - /mnt/nas/data/media/anime:/media/anime
@@ -62,9 +62,9 @@ services:
     image: lscr.io/linuxserver/sonarr:latest
     container_name: sonarr-tv
     environment:
-      - PUID=${PUID}
-      - PGID=${PGID}
-      - TZ=${TZ}
+      - PUID=1000
+      - PGID=1000
+      - TZ=America/Chicago
     volumes:
       - /docker/media/sonarr/sonarr-tv:/config
       - /mnt/nas/data/media/tv:/media/tv
@@ -78,9 +78,9 @@ services:
     image: lscr.io/linuxserver/radarr:latest
     container_name: radarr
     environment:
-      - PUID=${PUID}
-      - PGID=${PGID}
-      - TZ=${TZ}
+      - PUID=1000
+      - PGID=1000
+      - TZ=America/Chicago
     volumes:
       - /docker/media/radarr:/config
       - /mnt/nas/data/media/movies:/media/movies
@@ -95,9 +95,9 @@ services:
     image: lscr.io/linuxserver/prowlarr:latest
     container_name: prowlarr
     environment:
-      - PUID=${PUID}
-      - PGID=${PGID}
-      - TZ=${TZ}
+      - PUID=1000
+      - PGID=1000
+      - TZ=America/Chicago
       - DOTNET_SYSTEM_NET_DISABLEIPV6=1 # optional, set to 1 to disable IPv6
     volumes:
       - /docker/media/prowlarr:/config
@@ -108,9 +108,9 @@ services:
     image: ghcr.io/flaresolverr/flaresolverr:latest
     container_name: flaresolverr
     environment:
-      - PUID=${PUID}
-      - PGID=${PGID}
-      - TZ=${TZ}
+      - PUID=1000
+      - PGID=1000
+      - TZ=America/Chicago
       - LOG_LEVEL=${LOG_LEVEL:-info}
       - LOG_HTML=${LOG_HTML:-false}
       - CAPTCHA_SOLVER=${CAPTCHA_SOLVER:-none}
@@ -122,9 +122,9 @@ services:
     init: true
     container_name: seerr
     environment:
-      - PUID=${PUID}
-      - PGID=${PGID}
-      - TZ=${TZ}
+      - PUID=1000
+      - PGID=1000
+      - TZ=America/Chicago
       - LOG_LEVEL=debug
     ports:
       - 5055:5055
@@ -143,11 +143,12 @@ services:
     image: journeyover/plex-auto-languages:latest
     container_name: palang
     environment:
-      - PUID=${PUID}
-      - PGID=${PGID}
-      - TZ=${TZ}
-      - PLEX_URL=${PLEX_URL}
-      - PLEX_TOKEN=${PLEX_TOKEN}
+      - PUID=1000
+      - PGID=1000
+      - TZ=America/Chicago
+      - PLEX_URL=http://192.168.1.35:32400/
+    env_file:
+      - .env
     volumes:
       - /docker/media/palang:/config
     restart: unless-stopped
@@ -177,9 +178,9 @@ services:
 
       # And then select your root folders in Settings -> Downloads
     environment:
-      - PUID=${PUID}
-      - PGID=${PGID}
-      - TZ=${TZ}
+      - PUID=1000
+      - PGID=1000
+      - TZ=America/Chicago
     ports:
       - 7171:7171
     restart: unless-stopped
@@ -205,15 +206,11 @@ services:
     volumes:
       - /docker/media/gluetun:/gluetun
     environment:
-      - PUID=${PUID}
-      - PGID=${PGID}
-      - TZ=${TZ}
-      - VPN_SERVICE_PROVIDER=${VPN_SERVICE_PROVIDER}
-      - VPN_TYPE=wireguard
-      - WIREGUARD_PRIVATE_KEY=${WIREGUARD_PRIVATE_KEY}
-      - WIREGUARD_PRESHARED_KEY=${WIREGUARD_PRESHARED_KEY}
-      - WIREGUARD_ADDRESSES=${WIREGUARD_ADDRESSES}
-      - WIREGUARD_ENDPOINT_PORT=${WIREGUARD_ENDPOINT_PORT}
+      - PUID=1000
+      - PGID=1000
+      - TZ=America/Chicago
+    env_file:
+      - .env
 
 networks:
   proxy:

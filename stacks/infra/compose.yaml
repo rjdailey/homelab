@@ -30,9 +30,9 @@ services:
       - '443:443' # Public HTTPS Port
       - '81:81' # Admin Web Port
     environment:
-      - PUID=${PUID}
-      - PGID=${PGID}
-      - TZ=${TZ}
+      - PUID=1000
+      - PGID=1000
+      - TZ=America/Chicago
     volumes:
       - /docker/networking/nginx/data:/data
       - /docker/networking/nginx/letsencrypt:/etc/letsencrypt
