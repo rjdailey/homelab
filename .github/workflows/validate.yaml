@@ -9,12 +9,12 @@ on:
 jobs:
   validate:
     runs-on: ubuntu-latest
+    env:
+      FORCE_JAVASCRIPT_ACTIONS_TO_NODE24: true
 
     steps:
       - name: Checkout
         uses: actions/checkout@v4
-        env:
-          FORCE_JAVASCRIPT_ACTIONS_TO_NODE24: true
 
       - name: Install yamllint
         run: pip install yamllint
@@ -23,3 +23,12 @@ jobs:
         run: |
           yamllint -d "{extends: default, rules: {line-length: {max: 120}, truthy: {allowed-values: ['true', 'false']}, document-start: disable}}" \
             stacks/
+
+      - name: Validate compose files
+        run: |
+          for stack in stacks/*/; do
+            if [ -f "$stack/compose.yaml" ]; then
+              echo "Validating $stack..."
+              docker compose -f "$stack/compose.yaml" config --quiet
+            fi
+          done
