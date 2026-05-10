@@ -2,7 +2,6 @@ services:
   plex:
     image: lscr.io/linuxserver/plex:latest
     container_name: plex
-    network_mode: host
     environment:
       - PUID=${PUID}
       - PGID=${PGID}
@@ -13,7 +12,17 @@ services:
       - /mnt/nas/data/media:/media
     devices:
       - /dev/dri:/dev/dri
+    ports:
+      - "32400:32400"      # main web UI / remote access
+      - "1900:1900/udp"    # DLNA
+      - "5353:5353/udp"    # mDNS / Bonjour
+      # GDM network discovery
+      - "32410:32410/udp"
+      - "32412:32412/udp"
+      - "32413:32413/udp"
+      - "32414:32414/udp"
     restart: unless-stopped
+    networks: [proxy]
 
   jellyfin:
     image: lscr.io/linuxserver/jellyfin:latest
