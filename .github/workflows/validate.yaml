@@ -64,11 +64,15 @@ jobs:
     if: github.ref == 'refs/heads/main' && github.event_name == 'push'
 
     steps:
-      - name: Deploy monitoring stack
+      - name: Deploy changed stacks
         run: |
-          curl -s -X POST http://localhost:9120/execute/DeployStack \
-            -H "Content-Type: application/json" \
-            -H "X-Api-Key: ${{ secrets.KOMODO_API_KEY }}" \
-            -H "X-Api-Secret: ${{ secrets.KOMODO_API_SECRET }}" \
-            -d '{"stack": "monitoring"}' \
-            | jq .
+          CHANGED=$(git diff --name-only HEAD~1 HEAD | grep '^stacks/' | cut -d'/' -f2 | sort -u)
+          for stack in $CHANGED; do
+            echo "Deploying $stack..."
+            curl -s -X POST http://localhost:9120/execute/DeployStack \
+              -H "Content-Type: application/json" \
+              -H "X-Api-Key: ${{ secrets.KOMODO_API_KEY }}" \
+              -H "X-Api-Secret: ${{ secrets.KOMODO_API_SECRET }}" \
+              -d "{\"stack\": \"$stack\"}" \
+              | jq .
+          done

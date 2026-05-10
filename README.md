@@ -4,6 +4,8 @@ Production-grade self-hosted infrastructure running on a single-node Debian serv
 via GitOps with full observability, centralized log aggregation, zero-trust networking, and
 automated alerting.
 
+[![Validate](https://github.com/rjdailey/homelab/actions/workflows/validate.yaml/badge.svg)](https://github.com/rjdailey/homelab/actions/workflows/validate.yaml)
+
 <p align="center">
   <img src="docs/photos/rack.jpg" width="450"/>
   <br/>
@@ -75,14 +77,14 @@ automated alerting.
 - **Secret Management** — Secrets are never committed to the repository. `.env` files are
   gitignored and managed on the host. `.env.example` files document required variables per
   stack. Application data is stored at `/opt/appdata` on the host, outside the repository.
-- **Security** — SSH key-only auth, UFW firewall, no secrets in version 
+- **Security** — SSH key-only auth, UFW firewall, no secrets in version
   control, host networking limited to services that require it.
 
 ## Storage
 
-- **Storage** — mergerFS pools physical disks at `/mnt/nas` with 
-  most-free-space allocation. SnapRAID provides single-drive parity 
-  via snapraid-runner with safety thresholds. App data lives on the 
+- **Storage** — mergerFS pools physical disks at `/mnt/nas` with
+  most-free-space allocation. SnapRAID provides single-drive parity
+  via snapraid-runner with safety thresholds. App data lives on the
   host SSD at `/opt/appdata` for fast random I/O.
 - **Layout** — Media and torrent data live on the DAS at `/mnt/nas`. Application config and
   metadata live on the host SSD at `/opt/appdata` for fast random I/O.
@@ -101,7 +103,7 @@ stacks/
 ## Roadmap
 
 - [x] Observability stack (Prometheus, Grafana, Loki, Uptime Kuma, alerting)
-- [ ] CI/CD pipeline (GitHub Actions, self-hosted runner, Komodo integration)
+- [x] CI/CD pipeline (GitHub Actions, self-hosted runner, Komodo integration)
 - [ ] Secrets management (HashiCorp Vault)
 - [ ] Kubernetes (k3s)
 - [ ] Security hardening (Trivy, Fail2ban, network segmentation)
