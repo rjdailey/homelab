@@ -24,6 +24,14 @@ jobs:
           yamllint -d "{extends: default, rules: {line-length: {max: 120}, truthy: {allowed-values: ['true', 'false']}, document-start: disable}}" \
             stacks/
 
+      - name: Create dummy env files
+        run: |
+          for stack in stacks/*/; do
+            if [ -f "$stack/compose.yaml" ]; then
+              touch "$stack/.env"
+            fi
+          done
+
       - name: Validate compose files
         run: |
           for stack in stacks/*/; do
