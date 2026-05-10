@@ -57,3 +57,18 @@ jobs:
 
           echo "=== Shell access enabled ==="
           grep -rn "ENABLE_SHELL=true" stacks/ || echo "none found"
+
+  deploy:
+    needs: validate
+    runs-on: self-hosted
+    if: github.ref == 'refs/heads/main' && github.event_name == 'push'
+
+    steps:
+      - name: Deploy monitoring stack
+        run: |
+          curl -s -X POST http://localhost:9120/execute/DeployStack \
+            -H "Content-Type: application/json" \
+            -H "X-Api-Key: ${{ secrets.KOMODO_API_KEY }}" \
+            -H "X-Api-Secret: ${{ secrets.KOMODO_API_SECRET }}" \
+            -d '{"stack": "monitoring"}' \
+            | jq .
