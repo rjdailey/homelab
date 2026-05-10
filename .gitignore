@@ -2,3 +2,5 @@
 *.env
 
 !**/.env.example
+
+stacks/monitoring/homepage/logs/
