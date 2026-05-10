@@ -4,10 +4,10 @@
 
 - _hidden0:
     - GitHub:
-      - icon: github
-        href: https://github.com/rjdailey/homelab
-        description: ⠀
+        - icon: github
+          href: https://github.com/rjdailey/homelab
+          description: ⠀
     - Tailscale:
-      - icon: tailscale
-        href: https://login.tailscale.com/admin
-        description: ⠀
+        - icon: tailscale
+          href: https://login.tailscale.com/admin
+          description: ⠀
