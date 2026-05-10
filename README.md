@@ -26,7 +26,7 @@ automated alerting.
 
 | Stack      | Key Services                                  |
 |------------|-----------------------------------------------|
-| Monitoring | Prometheus, Grafana, Loki, Uptime Kuma        |
+| Monitoring | Prometheus, Grafana, Loki, Gatus              |
 | Media      | Plex, Jellyfin, PlexAutoLanguages, Watchstate |
 | Arr        | Sonarr, Radarr, Seerr                         |
 | Downloads  | qBittorrent, Prowlarr, Gluetun                |
@@ -37,9 +37,9 @@ automated alerting.
 
 | Stack      | Services                                                                              |
 |------------|---------------------------------------------------------------------------------------|
-| Monitoring | Prometheus, Grafana, Loki, Promtail, Uptime Kuma, cAdvisor, Node Exporter, Homepage  |
+| Monitoring | Prometheus, Grafana, Loki, Promtail, Gatus, cAdvisor, Node Exporter, Homepage         |
 | Media      | Plex, Jellyfin, PlexAutoLanguages, Watchstate                                         |
-| Arr        | Sonarr ×2, Radarr, Seerr, Agregarr                                                   |
+| Arr        | Sonarr ×2, Radarr, Seerr, Agregarr                                                    |
 | Downloads  | qBittorrent, RDTClient, Prowlarr, FlareSolverr, Gluetun                               |
 | Networking | AdGuard Home, NGINX Proxy Manager, Homebridge                                         |
 
@@ -51,8 +51,9 @@ automated alerting.
   Grafana dashboards cover host metrics (CPU, RAM, disk, network) and per-container resource usage.
 - **Logs** — Promtail ships all container logs to Loki via Docker service discovery, tagged by
   container name, compose project, and log stream. Queryable in Grafana via LogQL.
-- **Uptime** — Uptime Kuma monitors every service with HTTP health checks and tracks response
-  time and uptime percentages.
+- **Uptime** — Gatus monitors every service with HTTP health checks,
+  grouped by stack. Config-as-code — all monitors defined in YAML
+  and version controlled alongside the stack configs.
 - **Alerting** — Grafana alerts on disk usage >80%, memory pressure >85%, and container
   availability. Notifications route to Discord.
 

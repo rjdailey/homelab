@@ -97,19 +97,30 @@ services:
       start_period: 30s
     restart: unless-stopped
 
-  uptime-kuma:
+  gatus:
     cap_drop:
       - ALL
-    image: louislam/uptime-kuma:latest
-    container_name: uptime-kuma
+    image: twinproduction/gatus:latest
+    container_name: gatus
     network_mode: host
     volumes:
-      - /opt/appdata/uptime-kuma:/app/data
+      - ./gatus/config.yaml:/config/config.yaml:ro
+    env_file:
+      - .env
     restart: unless-stopped
+    healthcheck:
+      test: ["CMD", "wget", "-qO-", "http://localhost:8080/health"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
 
   homepage:
     cap_drop:
       - ALL
+    cap_add:
+      - CHOWN
+      - SETUID
+      - SETGID
     image: ghcr.io/gethomepage/homepage:latest
     container_name: homepage
     ports:

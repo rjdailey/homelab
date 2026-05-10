@@ -1,0 +1,186 @@
+storage:
+  type: memory
+
+metrics: true
+
+alerting:
+  discord:
+    webhook-url: "${GATUS_DISCORD_WEBHOOK}"
+    default-alert:
+      enabled: true
+      failure-threshold: 3
+      success-threshold: 2
+      send-on-resolved: true
+
+connectivity:
+  checker:
+    target: 1.1.1.1:53
+    interval: 60s
+
+endpoints:
+  # ===== MONITORING =====
+  - name: Grafana
+    group: Monitoring
+    url: http://192.168.1.35:3000/api/health
+    interval: 60s
+    conditions:
+      - "[STATUS] == 200"
+    alerts:
+      - type: discord
+
+  - name: Prometheus
+    group: Monitoring
+    url: http://192.168.1.35:9090/-/healthy
+    interval: 60s
+    conditions:
+      - "[STATUS] == 200"
+    alerts:
+      - type: discord
+
+  - name: Loki
+    group: Monitoring
+    url: http://192.168.1.35:3100/ready
+    interval: 60s
+    conditions:
+      - "[STATUS] == 200"
+    alerts:
+      - type: discord
+
+  - name: Gatus
+    group: Monitoring
+    url: http://192.168.1.35:8080/health
+    interval: 60s
+    conditions:
+      - "[STATUS] == 200"
+    alerts:
+      - type: discord
+
+  # ===== NETWORKING =====
+  - name: AdGuard Home
+    group: Networking
+    url: http://192.168.1.35:8000
+    interval: 60s
+    conditions:
+      - "[STATUS] == 200"
+    alerts:
+      - type: discord
+
+  - name: NGINX Proxy Manager
+    group: Networking
+    url: http://192.168.1.35:81
+    interval: 60s
+    conditions:
+      - "[STATUS] == 200"
+    alerts:
+      - type: discord
+
+  - name: Homebridge
+    group: Networking
+    url: http://192.168.1.35:8581
+    interval: 60s
+    conditions:
+      - "[STATUS] == 200"
+    alerts:
+      - type: discord
+
+  # ===== MEDIA =====
+  - name: Plex
+    group: Media
+    url: http://192.168.1.35:32400/identity
+    interval: 60s
+    conditions:
+      - "[STATUS] == 200"
+    alerts:
+      - type: discord
+
+  - name: Jellyfin
+    group: Media
+    url: http://192.168.1.35:8096/health
+    interval: 60s
+    conditions:
+      - "[STATUS] == 200"
+    alerts:
+      - type: discord
+
+  - name: Seerr
+    group: Media
+    url: http://192.168.1.35:5055/api/v1/status
+    interval: 60s
+    conditions:
+      - "[STATUS] == 200"
+    alerts:
+      - type: discord
+
+  # ===== ARR =====
+  - name: Sonarr TV
+    group: Arr
+    url: http://192.168.1.35:8990/api/v3/system/status
+    interval: 60s
+    conditions:
+      - "[STATUS] == 200"
+    alerts:
+      - type: discord
+    headers:
+      X-Api-Key: "${GATUS_SONARR_TV_API_KEY}"
+
+  - name: Sonarr Anime
+    group: Arr
+    url: http://192.168.1.35:8989/api/v3/system/status
+    interval: 60s
+    conditions:
+      - "[STATUS] == 200"
+    alerts:
+      - type: discord
+    headers:
+      X-Api-Key: "${GATUS_SONARR_ANIME_API_KEY}"
+
+  - name: Radarr
+    group: Arr
+    url: http://192.168.1.35:7878/api/v3/system/status
+    interval: 60s
+    conditions:
+      - "[STATUS] == 200"
+    alerts:
+      - type: discord
+    headers:
+      X-Api-Key: "${GATUS_RADARR_API_KEY}"
+
+  - name: Prowlarr
+    group: Arr
+    url: http://192.168.1.35:9696/api/v1/system/status
+    interval: 60s
+    conditions:
+      - "[STATUS] == 200"
+    alerts:
+      - type: discord
+    headers:
+      X-Api-Key: "${GATUS_PROWLARR_API_KEY}"
+
+  # ===== DOWNLOADS =====
+  - name: qBittorrent
+    group: Downloads
+    url: http://192.168.1.35:8083
+    interval: 60s
+    conditions:
+      - "[STATUS] == 200"
+    alerts:
+      - type: discord
+
+  - name: RDTClient
+    group: Downloads
+    url: http://192.168.1.35:6500
+    interval: 60s
+    conditions:
+      - "[STATUS] == 200"
+    alerts:
+      - type: discord
+
+  # ===== INFRASTRUCTURE =====
+  - name: Komodo
+    group: Infrastructure
+    url: http://192.168.1.35:9120
+    interval: 60s
+    conditions:
+      - "[STATUS] == 200"
+    alerts:
+      - type: discord
