@@ -1,36 +1,92 @@
-# Self-Hosted Homelab
+# Homelab
 
-## Overview
-A self-hosted, automated homelab environment built to simulate production infrastructure. This repository manages the deployment and configuration of various containerized services using GitOps methodologies, focusing on secure access, automated deployments, and infrastructure as code (IaC).
+Production-grade self-hosted infrastructure running on a single-node Debian server. Managed 
+via GitOps with full observability, centralized log aggregation, zero-trust networking, and 
+automated alerting.
 
-## Architecture & Tech Stack
-|Component    |Specification                |
-|-------------|-----------------------------|
-|CPU          |Intel N150                   |
-|RAM          |32GB DDR4                    |
-|OS           |Debian GNU/Linux 13 (Trixie) |
-|Storage Pool |~45TB + parity               |
+## Hardware
 
-* **Orchestration:** Komodo 
-* **Containerization:** Docker / Docker Compose
-* **Networking & Proxy:** NGINX Reverse Proxy
-* **VPN / Remote Access:** Tailscale / WireGuard
+| Component | Specification               |
+|-----------|-----------------------------|
+| CPU       | Intel N150                  |
+| RAM       | 32GB DDR4                   |
+| OS        | Debian 13 (Trixie)          |
+| Storage   | ~45TB usable (mergerFS + SnapRAID parity) |
 
-## Storage Stack (JBOD with Parity)
-To balance storage efficiency and data safety, this environment utilizes a combination of mergerFS for pooling and SnapRAID for parity protection.
-* **Pooling (mergerFS):** Combines multiple physical disks (/mnt/disk*) into a single virtual mount point (/mnt/nas). It uses the mfs (most free space) create policy to balance write operations across the array.
-* **Parity (SnapRAID):** A snapshot-based backup/parity system. It provides protection against up to one simultaneous drive failure without the overhead or complexity of traditional RAID.
+## Stacks
 
-## Key Technical Decisions & Engineering Workflow
+| Stack      | Key Services                                    |
+|------------|-------------------------------------------------|
+| Metrics    | Prometheus, Grafana, Loki, Uptime Kuma          |
+| Media      | Plex, Jellyfin, Sonarr, Radarr, Seerr           |
+| Downloads  | qBittorrent, Prowlarr, Gluetun                  |
+| Networking | AdGuard Home, NGINX Proxy Manager               |
+| Management | Dozzle, Homepage, Komodo                        |
 
-### Infrastructure as Code (IaC) & Automation
-Rather than manually deploying containers, this environment utilizes **Komodo** for container orchestration. By syncing this Git repository with Komodo, the infrastructure state is declared in code, allowing for automated, repeatable deployments that mirror enterprise GitOps workflows.
+<details>
+<summary>Full service list</summary>
 
-### Secret Management & Environment Security
-To align with production security standards, this repository does not rely on local `.env` files. Instead, it utilizes **environment variable injection** at the orchestration level. This ensures that sensitive credentials, API keys, and database passwords are securely managed outside the codebase, making the infrastructure highly portable and secure.
+| Stack      | Services                                                                    |
+|------------|-----------------------------------------------------------------------------|
+| Metrics    | Prometheus, Grafana, Loki, Promtail, Uptime Kuma, cAdvisor, Node Exporter  |
+| Media      | Plex, Jellyfin, Sonarr ×2, Radarr, Seerr, PlexAutoLanguages, Watchstate, Agregarr |
+| Downloads  | qBittorrent, RDTClient, Prowlarr, FlareSolverr, Gluetun                    |
+| Networking | AdGuard Home, NGINX Proxy Manager, Homebridge                               |
+| Management | Dozzle, Homepage                                                            |
 
-## Security & Maintenance Posture
-* **Access Control:** SSH key-only access with strict firewall hardening (UFW).
-* **Remote Management:** Secure, zero-trust remote access managed via Tailscale/WireGuard.
-* **Data Integrity:** Automated parity syncs and bitrot scrubbing are orchestrated via `snapraid-runner`, which provides email alerting and a safety threshold to prevent accidental data loss during syncs.
-* **Maintenance:** Automated system updates and configuration backups executed via custom cron jobs to minimize downtime and manual intervention.
+</details>
+
+## Observability
+
+- **Metrics** — Prometheus scrapes Node Exporter (host) and cAdvisor (containers) every 15s.
+  Grafana dashboards cover host metrics (CPU, RAM, disk, network) and per-container resource usage.
+- **Logs** — Promtail ships all container logs to Loki via Docker service discovery, tagged by
+  container name, compose project, and log stream. Queryable in Grafana via LogQL.
+- **Uptime** — Uptime Kuma monitors every service with HTTP health checks and tracks response
+  time and uptime percentages.
+- **Alerting** — Grafana alerts on disk usage >80%, memory pressure >85%, and container
+  availability. Notifications route to Discord.
+
+## Infrastructure
+
+- **Orchestration** — Komodo syncs this repository and manages stack deployments via GitOps.
+  Compose files are the source of truth. Changes are tested locally first, then promoted to
+  Git and redeployed through Komodo.
+- **Networking** — All services run on an internal Docker bridge network, exposed selectively
+  via NGINX Proxy Manager with SSL termination. Host networking used only where technically
+  required (AdGuard Home, Homebridge, Node Exporter).
+- **VPN** — Gluetun manages a single WireGuard tunnel. qBittorrent, Prowlarr, and FlareSolverr
+  route through it via `network_mode: service:gluetun`. Ports are exposed on the Gluetun
+  container, not the individual services.
+- **Secret Management** — Secrets are never committed to the repository. `.env` files are
+  gitignored and managed on the host. `.env.example` files document required variables per
+  stack. Application data is stored at `/opt/appdata` on the host, outside the repository.
+
+## Storage
+
+- **Pooling** — mergerFS combines physical disks into a single mount at `/mnt/nas` using a
+  most-free-space allocation policy to balance writes across the array.
+- **Parity** — SnapRAID provides snapshot-based parity protecting against single drive failure.
+  Syncs run on a schedule via snapraid-runner with safety thresholds to prevent accidental
+  data loss.
+- **Layout** — Media and torrent data live on the DAS at `/mnt/nas`. Application config and
+  metadata live on the host SSD at `/opt/appdata` for fast random I/O.
+
+## Security
+
+- SSH key-only authentication, password auth disabled
+- UFW firewall with strict ingress rules
+- Zero-trust remote access via Tailscale
+- Host networking limited to services that require it
+- No secrets in version control
+
+## Repository Structure
+
+```
+stacks/
+  metrics/        # Prometheus, Grafana, Loki, Promtail, Uptime Kuma
+  media/          # Plex, Jellyfin, *arr stack, Seerr
+  downloads/      # qBittorrent, RDTClient, Prowlarr, FlareSolverr, Gluetun
+  networking/     # AdGuard Home, NGINX Proxy Manager, Homebridge
+  monitoring/     # Dozzle, Homepage
+```
