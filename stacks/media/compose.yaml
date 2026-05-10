@@ -15,7 +15,6 @@ services:
     ports:
       - "32400:32400"      # main web UI / remote access
       - "1900:1900/udp"    # DLNA
-      - "5353:5353/udp"    # mDNS / Bonjour
       # GDM network discovery
       - "32410:32410/udp"
       - "32412:32412/udp"
