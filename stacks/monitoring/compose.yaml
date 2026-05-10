@@ -3,8 +3,8 @@ services:
     container_name: dozzle
     image: amir20/dozzle:latest
     volumes:
+      - /opt/appdata/dozzle:/data
       - /var/run/docker.sock:/var/run/docker.sock
-      - /docker/monitoring/dozzle/data:/data
     ports:
       - 8081:8080
     environment:
@@ -13,19 +13,19 @@ services:
       - DOZZLE_AUTH_PROVIDER=simple
     networks: [proxy]
 
-  homarr:
-    container_name: homarr
-    image: ghcr.io/homarr-labs/homarr:latest
-    restart: unless-stopped
-    volumes:
-      - /var/run/docker.sock:/var/run/docker.sock # Optional, only if you want docker integration
-      - /docker/monitoring/homarr/appdata:/appdata
-    environment:
-      - SECRET_ENCRYPTION_KEY=${SECRET_ENCRYPTION_KEY}
+  homepage:
+    image: ghcr.io/gethomepage/homepage:latest
+    container_name: homepage
     ports:
-      - '7575:7575'
+      - 3003:3000
+    volumes:
+      - ./homepage:/app/config
+      - /var/run/docker.sock:/var/run/docker.sock:ro
+    environment:
+      HOMEPAGE_ALLOWED_HOSTS: 192.168.1.35:3003
+      PUID: 1000
+      PGID: 1000
     networks: [proxy]
-
 
 networks:
   proxy:

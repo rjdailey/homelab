@@ -3,8 +3,8 @@ services:
     container_name: adguardhome
     restart: unless-stopped
     volumes:
-      - /docker/networking/adguard/work:/opt/adguardhome/work
-      - /docker/networking/adguard/conf:/opt/adguardhome/conf
+      - /opt/appdata/adguard/work:/opt/adguardhome/work
+      - /opt/appdata/adguard/conf:/opt/adguardhome/conf
     network_mode: host
     image: adguard/adguardhome
 
@@ -14,7 +14,7 @@ services:
     restart: always
     network_mode: host
     volumes:
-      - /docker/networking/homebridge/homebridge:/homebridge
+      - /opt/appdata/homebridge:/homebridge
     logging:
       driver: json-file
       options:
@@ -34,8 +34,8 @@ services:
       - PGID=1000
       - TZ=America/Chicago
     volumes:
-      - /docker/networking/nginx/data:/data
-      - /docker/networking/nginx/letsencrypt:/etc/letsencrypt
+      - /opt/appdata/nginx/data:/data
+      - /opt/appdata/nginx/letsencrypt:/etc/letsencrypt
     networks: [proxy]
 
 networks:

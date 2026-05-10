@@ -6,8 +6,8 @@ services:
       - PGID=1000
       - TZ=America/Chicago
     volumes:
+      - '/opt/appdata/rdtclient:/data/db'
       - '/mnt/nas/data/torrents:/data/downloads'
-      - '/docker/downloads/rdt:/data/db'
     image: rogerfar/rdtclient:latest
     restart: always
     logging:
@@ -29,10 +29,36 @@ services:
       - TORRENTING_PORT=6881
       - DOCKER_MODS=ghcr.io/vuetorrent/vuetorrent-lsio-mod:latest # optional, enable alternative WebUI at /vuetorrent in settings
     volumes:
-      - /docker/downloads/qbittorrent:/config
+      - /opt/appdata/qbittorrent:/config
       - /mnt/nas/data/torrents:/torrents
     network_mode: "service:gluetun"
     restart: unless-stopped
+
+  prowlarr:
+    image: lscr.io/linuxserver/prowlarr:latest
+    container_name: prowlarr
+    environment:
+      - PUID=1000
+      - PGID=1000
+      - TZ=America/Chicago
+      - DOTNET_SYSTEM_NET_DISABLEIPV6=1 # optional, set to 1 to disable IPv6
+    volumes:
+      - /opt/appdata/prowlarr:/config
+    restart: unless-stopped
+    network_mode: "service:gluetun"
+
+  flaresolverr:
+    image: ghcr.io/flaresolverr/flaresolverr:latest
+    container_name: flaresolverr
+    environment:
+      - PUID=1000
+      - PGID=1000
+      - TZ=America/Chicago
+      - LOG_LEVEL=${LOG_LEVEL:-info}
+      - LOG_HTML=${LOG_HTML:-false}
+      - CAPTCHA_SOLVER=${CAPTCHA_SOLVER:-none}
+    restart: unless-stopped
+    network_mode: "service:gluetun"
 
   gluetun:
     image: qmcgaw/gluetun
@@ -44,15 +70,19 @@ services:
     devices:
       - /dev/net/tun:/dev/net/tun
     ports:
-      - 8889:8888/tcp # HTTP proxy
-      - 8389:8388/tcp # Shadowsocks
-      - 8389:8388/udp # Shadowsocks
+      - 8888:8888/tcp # HTTP proxy
+      - 8388:8388/tcp # Shadowsocks
+      - 8388:8388/udp # Shadowsocks
+      # Prowlarr
+      - 9696:9696
+      # Flaresolverr
+      - 8191:8191
       # qBittorrent
       - 8083:8083 # WebUI
       - 6881:6881 # Torrenting port
       - 6881:6881/udp
     volumes:
-      - /docker/downloads/gluetun:/gluetun
+      - /opt/appdata/gluetun:/gluetun
     environment:
       - PUID=1000
       - PGID=1000

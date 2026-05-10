@@ -8,7 +8,7 @@ services:
       - TZ=America/Chicago
       - VERSION=latest
     volumes:
-      - /docker/media/plex:/config
+      - /opt/appdata/plex:/config
       - /mnt/nas/data/media:/media
     devices:
       - /dev/dri:/dev/dri
@@ -32,8 +32,8 @@ services:
       - TZ=America/Chicago
       - DOCKER_MODS=linuxserver/mods:jellyfin-opencl-intel # optional, set to enable hardware acceleration for Intel GPUs
     volumes:
-      - /docker/media/jellyfin:/config
-      - /docker/media/jellyfin/cache:/cache
+      - /opt/appdata/jellyfin:/config
+      - /opt/appdata/jellyfin/cache:/cache
       - /mnt/nas/data/media:/media:ro
     devices:
       - /dev/dri:/dev/dri
@@ -50,7 +50,7 @@ services:
       - PGID=1000
       - TZ=America/Chicago
     volumes:
-      - /docker/media/sonarr/sonarr-anime:/config
+      - /opt/appdata/sonarr/anime:/config
       - /mnt/nas/data/media/anime:/media/anime
       - /mnt/nas/data/torrents:/torrents
     ports:
@@ -66,7 +66,7 @@ services:
       - PGID=1000
       - TZ=America/Chicago
     volumes:
-      - /docker/media/sonarr/sonarr-tv:/config
+      - /opt/appdata/sonarr/tv:/config
       - /mnt/nas/data/media/tv:/media/tv
       - /mnt/nas/data/torrents:/torrents
     ports:
@@ -82,7 +82,7 @@ services:
       - PGID=1000
       - TZ=America/Chicago
     volumes:
-      - /docker/media/radarr:/config
+      - /opt/appdata/radarr:/config
       - /mnt/nas/data/media/movies:/media/movies
       - /mnt/nas/data/media/anime-movies:/media/anime-movies
       - /mnt/nas/data/torrents:/torrents
@@ -90,32 +90,6 @@ services:
       - 7878:7878
     restart: unless-stopped
     networks: [proxy]
-
-  prowlarr:
-    image: lscr.io/linuxserver/prowlarr:latest
-    container_name: prowlarr
-    environment:
-      - PUID=1000
-      - PGID=1000
-      - TZ=America/Chicago
-      - DOTNET_SYSTEM_NET_DISABLEIPV6=1 # optional, set to 1 to disable IPv6
-    volumes:
-      - /docker/media/prowlarr:/config
-    restart: unless-stopped
-    network_mode: "service:gluetun"
-
-  flaresolverr:
-    image: ghcr.io/flaresolverr/flaresolverr:latest
-    container_name: flaresolverr
-    environment:
-      - PUID=1000
-      - PGID=1000
-      - TZ=America/Chicago
-      - LOG_LEVEL=${LOG_LEVEL:-info}
-      - LOG_HTML=${LOG_HTML:-false}
-      - CAPTCHA_SOLVER=${CAPTCHA_SOLVER:-none}
-    restart: unless-stopped
-    network_mode: "service:gluetun"
 
   seerr:
     image: ghcr.io/seerr-team/seerr:latest
@@ -129,7 +103,7 @@ services:
     ports:
       - 5055:5055
     volumes:
-      - /docker/media/seerr:/app/config
+      - /opt/appdata/seerr:/app/config
     healthcheck:
       test: wget --no-verbose --tries=1 --spider http://localhost:5055/api/v1/status || exit 1
       start_period: 20s
@@ -150,9 +124,8 @@ services:
     env_file:
       - .env
     volumes:
-      - /docker/media/palang:/config
+      - /opt/appdata/plexautolanguages:/config
     restart: unless-stopped
-    networks: [proxy]
 
   watchstate:
     image: ghcr.io/arabcoders/watchstate:latest
@@ -163,14 +136,14 @@ services:
     ports:
         - "8082:8080"
     volumes:
-        - /docker/media/watchstate/data:/config:rw
+        - /opt/appdata/watchstate:/config:rw
     networks: [proxy]
 
   agregarr:
     image: agregarr/agregarr:latest
     container_name: agregarr
     volumes:
-      - /docker/media/agregarr/config:/app/config
+      - /opt/appdata/agregarr/:/app/config
 
       # Optional: For Coming Soon/Placeholder feature
       # - /path/to/placeholder/movies:/data/movies
@@ -185,32 +158,6 @@ services:
       - 7171:7171
     restart: unless-stopped
     networks: [proxy]
-
-  gluetun:
-    image: qmcgaw/gluetun
-    container_name: gluetun_media
-    # line above must be uncommented to allow external containers to connect.
-    # See https://github.com/qdm12/gluetun-wiki/blob/main/setup/connect-a-container-to-gluetun.md#external-container-to-gluetun
-    cap_add:
-      - NET_ADMIN
-    devices:
-      - /dev/net/tun:/dev/net/tun
-    ports:
-      - 8888:8888/tcp # HTTP proxy
-      - 8388:8388/tcp # Shadowsocks
-      - 8388:8388/udp # Shadowsocks
-      # Prowlarr
-      - 9696:9696
-      # Flaresolverr
-      - "${PORT:-8191}:8191"
-    volumes:
-      - /docker/media/gluetun:/gluetun
-    environment:
-      - PUID=1000
-      - PGID=1000
-      - TZ=America/Chicago
-    env_file:
-      - .env
 
 networks:
   proxy:
