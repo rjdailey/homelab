@@ -47,6 +47,9 @@ automated alerting.
 - **Alerting** — Grafana alerts on disk usage >80%, memory pressure >85%, and container
   availability. Notifications route to Discord.
 
+![Grafana Dashboard](docs/screenshots/grafana-node-exporter.png)
+![Uptime Kuma](docs/screenshots/uptime-kuma.png)
+
 ## Infrastructure
 
 - **Orchestration** — Komodo syncs this repository and manages stack deployments via GitOps.
