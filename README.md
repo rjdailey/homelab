@@ -1,38 +1,38 @@
 # Homelab
 
-Production-grade self-hosted infrastructure running on a single-node Debian server. Managed 
-via GitOps with full observability, centralized log aggregation, zero-trust networking, and 
+Production-grade self-hosted infrastructure running on a single-node Debian server. Managed
+via GitOps with full observability, centralized log aggregation, zero-trust networking, and
 automated alerting.
 
 ## Hardware
 
-| Component | Specification               |
-|-----------|-----------------------------|
-| CPU       | Intel N150                  |
-| RAM       | 32GB DDR4                   |
-| OS        | Debian 13 (Trixie)          |
+| Component | Specification                             |
+|-----------|-------------------------------------------|
+| CPU       | Intel N150                                |
+| RAM       | 32GB DDR4                                 |
+| OS        | Debian 13 (Trixie)                        |
 | Storage   | ~45TB usable (mergerFS + SnapRAID parity) |
 
 ## Stacks
 
-| Stack      | Key Services                                    |
-|------------|-------------------------------------------------|
-| Metrics    | Prometheus, Grafana, Loki, Uptime Kuma          |
-| Media      | Plex, Jellyfin, Sonarr, Radarr, Seerr           |
-| Downloads  | qBittorrent, Prowlarr, Gluetun                  |
-| Networking | AdGuard Home, NGINX Proxy Manager               |
-| Management | Dozzle, Homepage, Komodo                        |
+| Stack      | Key Services                                  |
+|------------|-----------------------------------------------|
+| Monitoring | Prometheus, Grafana, Loki, Uptime Kuma        |
+| Media      | Plex, Jellyfin, PlexAutoLanguages, Watchstate |
+| Arr        | Sonarr, Radarr, Seerr                         |
+| Downloads  | qBittorrent, Prowlarr, Gluetun                |
+| Networking | AdGuard Home, NGINX Proxy Manager, Homebridge |
 
 <details>
 <summary>Full service list</summary>
 
-| Stack      | Services                                                                    |
-|------------|-----------------------------------------------------------------------------|
-| Metrics    | Prometheus, Grafana, Loki, Promtail, Uptime Kuma, cAdvisor, Node Exporter  |
-| Media      | Plex, Jellyfin, Sonarr ×2, Radarr, Seerr, PlexAutoLanguages, Watchstate, Agregarr |
-| Downloads  | qBittorrent, RDTClient, Prowlarr, FlareSolverr, Gluetun                    |
-| Networking | AdGuard Home, NGINX Proxy Manager, Homebridge                               |
-| Management | Dozzle, Homepage                                                            |
+| Stack      | Services                                                                              |
+|------------|---------------------------------------------------------------------------------------|
+| Monitoring | Prometheus, Grafana, Loki, Promtail, Uptime Kuma, cAdvisor, Node Exporter, Homepage  |
+| Media      | Plex, Jellyfin, PlexAutoLanguages, Watchstate                                         |
+| Arr        | Sonarr ×2, Radarr, Seerr, Agregarr                                                   |
+| Downloads  | qBittorrent, RDTClient, Prowlarr, FlareSolverr, Gluetun                               |
+| Networking | AdGuard Home, NGINX Proxy Manager, Homebridge                                         |
 
 </details>
 
@@ -47,7 +47,9 @@ automated alerting.
 - **Alerting** — Grafana alerts on disk usage >80%, memory pressure >85%, and container
   availability. Notifications route to Discord.
 
-![Grafana Dashboard](docs/screenshots/grafana-node-exporter.png)
+## Dashboards
+
+![Grafana Node Exporter](docs/screenshots/grafana-node-exporter.png)
 ![Uptime Kuma](docs/screenshots/uptime-kuma.png)
 
 ## Infrastructure
@@ -87,9 +89,17 @@ automated alerting.
 
 ```
 stacks/
-  metrics/        # Prometheus, Grafana, Loki, Promtail, Uptime Kuma
-  media/          # Plex, Jellyfin, *arr stack, Seerr
+  monitoring/     # Prometheus, Grafana, Loki, Promtail, Uptime Kuma, cAdvisor, Node Exporter, Homepage
+  media/          # Plex, Jellyfin, PlexAutoLanguages, Watchstate
+  arr/            # Sonarr ×2, Radarr, Seerr, Agregarr
   downloads/      # qBittorrent, RDTClient, Prowlarr, FlareSolverr, Gluetun
   networking/     # AdGuard Home, NGINX Proxy Manager, Homebridge
-  monitoring/     # Dozzle, Homepage
 ```
+
+## Roadmap
+
+- [x] Observability stack (Prometheus, Grafana, Loki, Uptime Kuma, alerting)
+- [ ] CI/CD pipeline (GitHub Actions, self-hosted runner, Komodo integration)
+- [ ] Secrets management (HashiCorp Vault)
+- [ ] Kubernetes (k3s)
+- [ ] Security hardening (Trivy, Fail2ban, network segmentation)
