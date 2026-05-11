@@ -61,7 +61,7 @@ automated alerting.
 
 <p align="center">
   <img src="docs/screenshots/grafana-node-exporter.png" width="49%"/>
-  <img src="docs/screenshots/uptime-kuma.png" width="49%"/>
+  <img src="docs/screenshots/gatus.png" width="49%"/>
 </p>
 
 ## Infrastructure
@@ -94,7 +94,7 @@ automated alerting.
 
 ```
 stacks/
-  monitoring/     # Prometheus, Grafana, Loki, Promtail, Uptime Kuma, cAdvisor, Node Exporter, Homepage
+  monitoring/     # Prometheus, Grafana, Loki, Promtail, Gatus, cAdvisor, Node Exporter, Homepage
   media/          # Plex, Jellyfin, PlexAutoLanguages, Watchstate
   arr/            # Sonarr ×2, Radarr, Seerr, Agregarr
   downloads/      # qBittorrent, RDTClient, Prowlarr, FlareSolverr, Gluetun
