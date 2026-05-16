@@ -1,6 +1,7 @@
 services:
   rdt:
     container_name: rdt
+    image: rogerfar/rdtclient:latest
     environment:
       - PUID=1000
       - PGID=1000
@@ -8,9 +9,6 @@ services:
     volumes:
       - '/opt/appdata/rdtclient:/data/db'
       - '/mnt/nas/data/torrents:/data/downloads'
-    cap_drop:
-      - ALL
-    image: rogerfar/rdtclient:latest
     restart: always
     logging:
       driver: json-file
@@ -21,8 +19,6 @@ services:
     networks: [proxy]
 
   qbittorrent:
-    cap_drop:
-      - ALL
     image: lscr.io/linuxserver/qbittorrent:latest
     container_name: qbittorrent
     environment:
@@ -39,8 +35,6 @@ services:
     restart: unless-stopped
 
   prowlarr:
-    cap_drop:
-      - ALL
     image: lscr.io/linuxserver/prowlarr:latest
     container_name: prowlarr
     environment:
