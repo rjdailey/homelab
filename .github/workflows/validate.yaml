@@ -11,10 +11,26 @@ jobs:
     runs-on: ubuntu-latest
     env:
       FORCE_JAVASCRIPT_ACTIONS_TO_NODE24: true
+    outputs:
+      changed_stacks: ${{ steps.changed.outputs.stacks }}
 
     steps:
       - name: Checkout
         uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Get changed stacks
+        id: changed
+        run: |
+          if [ "${{ github.event.before }}" = "0000000000000000000000000000000000000000" ]; then
+            STACKS=$(ls stacks/ | tr '\n' ' ')
+          else
+            STACKS=$(git diff --name-only ${{ github.event.before }} HEAD \
+              | grep '^stacks/' | cut -d'/' -f2 | sort -u | tr '\n' ' ')
+          fi
+          echo "stacks=$STACKS" >> $GITHUB_OUTPUT
+          echo "Changed stacks: $STACKS"
 
       - name: Install yamllint
         run: pip install yamllint
@@ -55,13 +71,15 @@ jobs:
   deploy:
     needs: validate
     runs-on: self-hosted
-    if: github.ref == 'refs/heads/main' && github.event_name == 'push'
+    if: |
+      github.ref == 'refs/heads/main' &&
+      github.event_name == 'push' &&
+      needs.validate.outputs.changed_stacks != ''
 
     steps:
       - name: Deploy changed stacks
         run: |
-          CHANGED=$(git diff --name-only HEAD~1 HEAD | grep '^stacks/' | cut -d'/' -f2 | sort -u)
-          for stack in $CHANGED; do
+          for stack in ${{ needs.validate.outputs.changed_stacks }}; do
             echo "Deploying $stack..."
             curl -s -X POST http://localhost:9120/execute/DeployStack \
               -H "Content-Type: application/json" \
