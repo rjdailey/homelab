@@ -55,6 +55,13 @@ endpoints:
     alerts:
       - type: discord
 
+  - name: UniFi Poller
+    group: Monitoring
+    url: http://192.168.1.35:9130/metrics
+    interval: 60s
+    conditions:
+      - "[STATUS] == 200"
+
   # ===== NETWORKING =====
   - name: AdGuard Home
     group: Networking

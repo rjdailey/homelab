@@ -14,3 +14,8 @@ scrape_configs:
   - job_name: gluetun
     static_configs:
       - targets: ["localhost:<gluetun_metrics_port>"]
+
+  - job_name: unpoller
+    scrape_interval: 30s
+    static_configs:
+      - targets: ["localhost:9130"]
