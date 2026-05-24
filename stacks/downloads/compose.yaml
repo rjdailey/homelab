@@ -48,8 +48,6 @@ services:
     network_mode: "service:gluetun"
 
   flaresolverr:
-    cap_drop:
-      - ALL
     image: ghcr.io/flaresolverr/flaresolverr:latest
     container_name: flaresolverr
     environment:
@@ -65,8 +63,6 @@ services:
   gluetun:
     cap_add:
       - NET_ADMIN
-    cap_drop:
-      - ALL
     image: qmcgaw/gluetun
     container_name: gluetun
     devices:
