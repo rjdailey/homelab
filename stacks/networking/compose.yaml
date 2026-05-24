@@ -1,7 +1,5 @@
 services:
   adguardhome:
-    cap_drop:
-      - ALL
     image: adguard/adguardhome
     container_name: adguardhome
     volumes:
@@ -16,8 +14,6 @@ services:
     restart: unless-stopped
 
   homebridge:
-    cap_drop:
-      - ALL
     image: homebridge/homebridge:latest
     container_name: homebridge
     restart: always
@@ -31,8 +27,6 @@ services:
         max-file: "1"
 
   nginx-proxy-manager:
-    cap_drop:
-      - ALL
     image: 'jc21/nginx-proxy-manager:latest'
     container_name: nginx
     restart: unless-stopped
