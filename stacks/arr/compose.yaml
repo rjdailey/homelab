@@ -49,8 +49,6 @@ services:
     networks: [proxy]
 
   seerr:
-    cap_drop:
-      - ALL
     image: ghcr.io/seerr-team/seerr:latest
     init: true
     container_name: seerr
@@ -92,6 +90,19 @@ services:
     ports:
       - 7171:7171
     restart: unless-stopped
+    networks: [proxy]
+
+  profilarr:
+    image: santiagosayshey/profilarr:latest
+    container_name: profilarr
+    ports:
+      - '6868:6868'
+    volumes:
+      - /opt/appdata/profilarr:/config
+    environment:
+      - PUID=1000
+      - PGID=1000
+      - TZ=America/Chicago
     networks: [proxy]
 
 networks:
