@@ -18,6 +18,21 @@ services:
       - '6500:6500'
     networks: [proxy]
 
+  decypharr:
+    image: cy01/blackhole:latest
+    container_name: decypharr
+    ports:
+      - "8282:8282"
+    volumes:
+      - /mnt/nas/data/torrents:/torrents
+      - /opt/appdata/decypharr/:/app # config.json must be in this directory
+    restart: unless-stopped
+    devices:
+      - /dev/fuse:/dev/fuse:rwm
+    cap_add:
+      - SYS_ADMIN
+    networks: [proxy]
+
   qbittorrent:
     image: lscr.io/linuxserver/qbittorrent:latest
     container_name: qbittorrent
@@ -42,10 +57,12 @@ services:
       - PGID=1000
       - TZ=America/Chicago
       - DOTNET_SYSTEM_NET_DISABLEIPV6=1  # optional, set to 1 to disable IPv6
+    ports:
+      - 9696:9696
     volumes:
       - /opt/appdata/prowlarr:/config
     restart: unless-stopped
-    network_mode: "service:gluetun"
+    # network_mode: "service:gluetun"
 
   flaresolverr:
     image: ghcr.io/flaresolverr/flaresolverr:latest
@@ -57,8 +74,10 @@ services:
       - LOG_LEVEL=${LOG_LEVEL:-info}
       - LOG_HTML=${LOG_HTML:-false}
       - CAPTCHA_SOLVER=${CAPTCHA_SOLVER:-none}
+    ports:
+      - 8191:8191
     restart: unless-stopped
-    network_mode: "service:gluetun"
+    # network_mode: "service:gluetun"
 
   gluetun:
     cap_add:
@@ -72,9 +91,7 @@ services:
       - 8388:8388/tcp  # Shadowsocks
       - 8388:8388/udp  # Shadowsocks
       # Prowlarr
-      - 9696:9696
       # Flaresolverr
-      - 8191:8191
       # qBittorrent
       - 8083:8083  # WebUI
       - 6881:6881  # Torrenting port
