@@ -118,6 +118,15 @@ endpoints:
     alerts:
       - type: discord
 
+  - name: Calibe-Web Automated
+    group: Media
+    url: http://192.168.1.35:8083
+    interval: 60s
+    conditions:
+      - "[STATUS] == 200"
+    alerts:
+      - type: discord
+
   # ===== ARR =====
   - name: Sonarr TV
     group: Arr
@@ -164,18 +173,18 @@ endpoints:
       X-Api-Key: "${GATUS_PROWLARR_API_KEY}"
 
   # ===== DOWNLOADS =====
-  - name: qBittorrent
+  - name: RDTClient
     group: Downloads
-    url: http://192.168.1.35:8083
+    url: http://192.168.1.35:6500
     interval: 60s
     conditions:
       - "[STATUS] == 200"
     alerts:
       - type: discord
 
-  - name: RDTClient
+  - name: Shelfmark
     group: Downloads
-    url: http://192.168.1.35:6500
+    url: http://192.168.1.35:8084
     interval: 60s
     conditions:
       - "[STATUS] == 200"
