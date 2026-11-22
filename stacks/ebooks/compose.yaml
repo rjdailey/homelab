@@ -38,6 +38,7 @@ services:
     # cap_add:
     #   - NET_BIND_SERVICE
     restart: unless-stopped
+    networks: [proxy]
 
   shelfmark:
     image: ghcr.io/calibrain/shelfmark:latest
@@ -53,3 +54,8 @@ services:
       - /opt/appdata/shelfmark:/config # App configuration
       # Required for torrent / usenet - path must match your download client's volume exactly
       - /mnt/nas/data/torrents:/data/downloads
+    networks: [proxy]
+
+networks:
+  proxy:
+    external: true
