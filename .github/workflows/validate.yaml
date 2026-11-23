@@ -78,13 +78,54 @@ jobs:
 
     steps:
       - name: Deploy changed stacks
+        shell: bash
+        env:
+          CHANGED_STACKS: ${{ needs.validate.outputs.changed_stacks }}
+          KOMODO_API_KEY: ${{ secrets.KOMODO_API_KEY }}
+          KOMODO_API_SECRET: ${{ secrets.KOMODO_API_SECRET }}
         run: |
-          for stack in ${{ needs.validate.outputs.changed_stacks }}; do
-            echo "Deploying $stack..."
-            curl -s -X POST http://localhost:9120/execute/DeployStack \
+          komodo_request() {
+            curl --fail --silent --show-error --max-time 15 \
               -H "Content-Type: application/json" \
-              -H "X-Api-Key: ${{ secrets.KOMODO_API_KEY }}" \
-              -H "X-Api-Secret: ${{ secrets.KOMODO_API_SECRET }}" \
-              -d "{\"stack\": \"$stack\"}" \
-              | jq .
+              -H "X-Api-Key: $KOMODO_API_KEY" \
+              -H "X-Api-Secret: $KOMODO_API_SECRET" \
+              --data "$2" "http://localhost:9120/$1"
+          }
+
+          deploy_stack() {
+            local stack=$1 response update_id status request deadline
+            echo "Deploying $stack..."
+            response=$(komodo_request execute/DeployStack "$(jq -nc --arg stack "$stack" '{stack: $stack}')") ||
+              return 1
+            update_id=$(jq -er '._id["$oid"] | select(type == "string" and length > 0)' <<< "$response") ||
+              return 1
+            echo "Komodo update ID for $stack is $update_id"
+            request=$(jq -nc --arg id "$update_id" '{id: $id}')
+            deadline=$((SECONDS + 300))
+            while (( SECONDS < deadline )); do
+              response=$(komodo_request read/GetUpdate "$request") || return 1
+              status=$(jq -er '.status' <<< "$response") || return 1
+              case "$status" in
+                Complete)
+                  jq -e '.success == true' <<< "$response" >/dev/null
+                  return $?
+                  ;;
+                Queued|InProgress) sleep 5 ;;
+                *) echo "Unexpected Komodo status for $stack: $status"; return 1 ;;
+              esac
+            done
+            echo "Timed out waiting for the Komodo deployment of $stack"
+            return 1
+          }
+
+          failed=0
+          read -r -a stacks <<< "$CHANGED_STACKS"
+          for stack in "${stacks[@]}"; do
+            if deploy_stack "$stack"; then
+              echo "Deployed $stack"
+            else
+              echo "::error::Deployment of $stack failed. Check the update in Komodo."
+              failed=1
+            fi
           done
+          exit "$failed"

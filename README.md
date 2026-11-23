@@ -39,6 +39,8 @@ Plex handles video, with separate Sonarr instances for TV and anime. Shelfmark w
 
 GitHub Actions lints the stack YAML, validates the Compose files, and runs a KICS scan. On pushes to `main`, a self-hosted runner calls Komodo to redeploy the changed stacks. Each stack has a `compose.yaml` under `stacks/`, and Komodo’s own Compose file lives in `komodo/`.
 
+See the [operations guide](docs/operations.md) for host rebuilds and deployment checks.
+
 AdGuard Home handles local DNS, and NGINX Proxy Manager handles reverse proxying and TLS termination. NGINX Proxy Manager and selected services share the external Docker network named `proxy`. AdGuard Home, Homebridge, and several monitoring services use host networking.
 
 Stack `.env` files are gitignored and managed on the host. The `.env.example` files document variables where provided. Host access uses SSH keys, and UFW handles the firewall.
