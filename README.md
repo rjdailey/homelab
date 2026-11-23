@@ -1,110 +1,63 @@
 # Homelab
 
-Production-grade self-hosted infrastructure running on a single-node Debian server, managed
-via GitOps with full observability, centralized log aggregation, zero-trust networking, and
-automated alerting.
+This is the setup behind my home network, Plex library, and ebook shelf. It all runs on one Intel N150 mini PC with Debian 13. The Compose files live here, and Komodo deploys them.
 
 [![Validate](https://github.com/rjdailey/homelab/actions/workflows/validate.yaml/badge.svg)](https://github.com/rjdailey/homelab/actions/workflows/validate.yaml)
 
 <p align="center">
-  <img src="docs/photos/rack.jpg" width="450"/>
+  <img src="docs/photos/rack.jpg" width="450" alt="Homelab rack with a UniFi switch, Cloud Gateway, mini PC, and disk enclosure"/>
   <br/>
-  <em>8U rack — Unifi switch, Cloud Gateway, Intel N150 mini PC, DAS (45TB)</em>
+  <em>8U, 10 inches wide, and about 45 TB of usable storage.</em>
 </p>
 
-## Hardware
+## Hardware and storage
 
-| Component | Specification                             |
-|-----------|-------------------------------------------|
-| Rack      | 8U 10" Open Frame
-| CPU       | Intel N150                                |
-| RAM       | 32GB DDR4                                 |
-| OS        | Debian 13 (Trixie)                        |
-| Storage   | ~45TB usable (mergerFS + SnapRAID parity) |
+| Component | Details |
+| --- | --- |
+| Rack | 8U, 10-inch open frame with a UniFi switch and Cloud Gateway |
+| Server | Intel N150 mini PC, 32 GB DDR4, Debian 13 (Trixie) |
+| Storage | About 45 TB usable in a direct-attached enclosure |
+
+mergerFS pools the disks at `/mnt/nas` and places new files on the disk with the most free space. SnapRAID provides single-drive parity, and snapraid-runner runs the sync with safety thresholds.
+
+Media and torrent data live under `/mnt/nas/data`. Most bind-mounted app configs and metadata live on the host SSD under `/opt/appdata`, including CWA’s Calibre library.
 
 ## Stacks
 
-| Stack      | Key Services                                  |
-|------------|-----------------------------------------------|
-| Monitoring | Prometheus, Grafana, Loki, Gatus              |
-| Media      | Plex, Jellyfin, PlexAutoLanguages, Watchstate |
-| Arr        | Sonarr, Radarr, Seerr                         |
-| Downloads  | qBittorrent, Prowlarr, Gluetun                |
-| Networking | AdGuard Home, NGINX Proxy Manager, Homebridge |
+| Stack | Services |
+| --- | --- |
+| [Media](stacks/media/compose.yaml) | Plex, PlexAutoLanguages |
+| [Ebooks](stacks/ebooks/compose.yaml) | Calibre-Web Automated, Shelfmark |
+| [Arr](stacks/arr/compose.yaml) | Sonarr (TV and anime), Radarr, Seerr, Agregarr, Profilarr |
+| [Downloads](stacks/downloads/compose.yaml) | RDTClient, Decypharr, Prowlarr, FlareSolverr |
+| [Networking](stacks/networking/compose.yaml) | AdGuard Home, NGINX Proxy Manager, Homebridge |
+| [Monitoring](stacks/monitoring/compose.yaml) | Prometheus, Grafana, Loki, Promtail, Gatus, cAdvisor, Node Exporter, Homepage, Unpoller |
 
-<details>
-<summary>Full service list</summary>
+Plex handles video, with separate Sonarr instances for TV and anime. Shelfmark writes to `/mnt/nas/data/torrents/books`, which Calibre-Web Automated mounts as its ingest directory. CWA removes the files from that directory after processing them.
 
-| Stack      | Services                                                                              |
-|------------|---------------------------------------------------------------------------------------|
-| Monitoring | Prometheus, Grafana, Loki, Promtail, Gatus, cAdvisor, Node Exporter, Homepage         |
-| Media      | Plex, Jellyfin, PlexAutoLanguages, Watchstate                                         |
-| Arr        | Sonarr ×2, Radarr, Seerr, Agregarr                                                    |
-| Downloads  | qBittorrent, RDTClient, Prowlarr, FlareSolverr, Gluetun                               |
-| Networking | AdGuard Home, NGINX Proxy Manager, Homebridge                                         |
+## Deployments and networking
 
-</details>
+GitHub Actions lints the stack YAML, validates the Compose files, and runs a KICS scan. On pushes to `main`, a self-hosted runner calls Komodo to redeploy the changed stacks. Each stack has a `compose.yaml` under `stacks/`, and Komodo’s own Compose file lives in `komodo/`.
 
-## Observability
+AdGuard Home handles local DNS, and NGINX Proxy Manager handles reverse proxying and TLS termination. NGINX Proxy Manager and selected services share the external Docker network named `proxy`. AdGuard Home, Homebridge, and several monitoring services use host networking.
 
-- **Metrics** — Prometheus scrapes Node Exporter (host) and cAdvisor (containers) every 15s.
-  Grafana dashboards cover host metrics (CPU, RAM, disk, network) and per-container resource usage.
-- **Logs** — Promtail ships all container logs to Loki via Docker service discovery, tagged by
-  container name, compose project, and log stream. Queryable in Grafana via LogQL.
-- **Uptime** — Gatus monitors every service with HTTP health checks,
-  grouped by stack. Config-as-code — all monitors defined in YAML
-  and version controlled alongside the stack configs.
-- **Alerting** — Grafana alerts on disk usage >80%, memory pressure >85%, and container
-  availability. Notifications route to Discord.
+Stack `.env` files are gitignored and managed on the host. The `.env.example` files document variables where provided. Host access uses SSH keys, and UFW handles the firewall.
 
-## Dashboards
+## Monitoring
+
+Gatus is where I check what’s up. Its HTTP checks are grouped by stack in [gatus/config.yaml](stacks/monitoring/gatus/config.yaml), and it sends failure and recovery alerts to Discord.
+
+Prometheus is configured to scrape Node Exporter and cAdvisor every 15 seconds and Unpoller every 30 seconds. I use Grafana to check host CPU, memory, disk and network usage, as well as per-container resource usage. Grafana also sends Discord alerts for disk usage above 80%, memory usage above 85%, and container availability.
+
+Promtail discovers containers through Docker and ships their logs to Loki. In Grafana, I can query them with LogQL and filter by container, Compose project, Compose service, or log stream.
 
 <p align="center">
-  <img src="docs/screenshots/grafana-node-exporter.png" width="49%"/>
-  <img src="docs/screenshots/gatus.png" width="49%"/>
+  <img src="docs/screenshots/grafana-node-exporter.png" width="49%" alt="Grafana host metrics dashboard"/>
+  <img src="docs/screenshots/gatus.png" width="49%" alt="Gatus service status dashboard"/>
 </p>
-
-## Infrastructure
-
-- **Orchestration** — Komodo syncs this repository and manages stack deployments via GitOps.
-  Compose files are the source of truth. Changes are tested locally first, then promoted to
-  Git and redeployed through Komodo.
-- **Networking** — All services run on an internal Docker bridge network, exposed selectively
-  via NGINX Proxy Manager with SSL termination. Host networking used only where technically
-  required (AdGuard Home, Homebridge, Node Exporter).
-- **VPN** — Gluetun manages a single WireGuard tunnel. qBittorrent, Prowlarr, and FlareSolverr
-  route through it via `network_mode: service:gluetun`. Ports are exposed on the Gluetun
-  container, not the individual services.
-- **Secret Management** — Secrets are never committed to the repository. `.env` files are
-  gitignored and managed on the host. `.env.example` files document required variables per
-  stack. Application data is stored at `/opt/appdata` on the host, outside the repository.
-- **Security** — SSH key-only auth, UFW firewall, no secrets in version
-  control, host networking limited to services that require it.
-
-## Storage
-
-- **Storage** — mergerFS pools physical disks at `/mnt/nas` with
-  most-free-space allocation. SnapRAID provides single-drive parity
-  via snapraid-runner with safety thresholds. App data lives on the
-  host SSD at `/opt/appdata` for fast random I/O.
-- **Layout** — Media and torrent data live on the DAS at `/mnt/nas`. Application config and
-  metadata live on the host SSD at `/opt/appdata` for fast random I/O.
-
-## Repository Structure
-
-```
-stacks/
-  monitoring/     # Prometheus, Grafana, Loki, Promtail, Gatus, cAdvisor, Node Exporter, Homepage
-  media/          # Plex, Jellyfin, PlexAutoLanguages, Watchstate
-  arr/            # Sonarr ×2, Radarr, Seerr, Agregarr
-  downloads/      # qBittorrent, RDTClient, Prowlarr, FlareSolverr, Gluetun
-  networking/     # AdGuard Home, NGINX Proxy Manager, Homebridge
-```
 
 ## Roadmap
 
-- [x] Observability stack (Prometheus, Grafana, Loki, Uptime Kuma, alerting)
-- [x] CI/CD pipeline (GitHub Actions, self-hosted runner, Komodo integration)
-- [ ] Secrets management (HashiCorp Vault)
-- [ ] Kubernetes (k3s)
-- [ ] Security hardening (Trivy, Fail2ban, network segmentation)
+- [ ] Move secrets management to HashiCorp Vault
+- [ ] Try k3s
+- [ ] Evaluate Trivy, Fail2ban, and further network segmentation
