@@ -18,6 +18,10 @@
 
 Compose may warn that an existing volume was created outside the project. Check that the running service mounts the expected volume with `docker inspect <container>`. Preserve the existing volumes when redeploying. In particular, avoid `docker compose down -v` on stacks whose data you need.
 
+### Ebook ingest
+
+Shelfmark writes to `/mnt/nas/data/torrents/books`. Calibre-Web Automated mounts that path as its ingest directory and removes files from it after processing. The Calibre library itself lives at `/opt/appdata/calibre-web-automated/library`.
+
 ## Verifying a deploy
 
 - On a push to `main`, open the [Validate workflow](../.github/workflows/validate.yaml) run. The deploy job prints a Komodo update ID for each changed stack and waits for the result.

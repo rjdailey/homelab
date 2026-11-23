@@ -1,26 +1,22 @@
 # Homelab
 
-This is the setup behind my home network, Plex library, and ebook shelf. It all runs on one Intel N150 mini PC with Debian 13. The Compose files live here, and Komodo deploys them.
+A single-node Debian homelab for media, ebooks, and home networking. The stacks run in Docker Compose, with deployments handled by Komodo.
 
 [![Validate](https://github.com/rjdailey/homelab/actions/workflows/validate.yaml/badge.svg)](https://github.com/rjdailey/homelab/actions/workflows/validate.yaml)
 
 <p align="center">
   <img src="docs/photos/rack.jpg" width="450" alt="Homelab rack with a UniFi switch, Cloud Gateway, mini PC, and disk enclosure"/>
   <br/>
-  <em>8U, 10 inches wide, and about 45 TB of usable storage.</em>
+  <em>8U rack with a UniFi switch, Cloud Gateway, Intel N150 mini PC, and 45 TB DAS.</em>
 </p>
 
-## Hardware and storage
+## Hardware
 
 | Component | Details |
 | --- | --- |
 | Rack | 8U, 10-inch open frame with a UniFi switch and Cloud Gateway |
 | Server | Intel N150 mini PC, 32 GB DDR4, Debian 13 (Trixie) |
 | Storage | About 45 TB usable in a direct-attached enclosure |
-
-mergerFS pools the disks at `/mnt/nas` and places new files on the disk with the most free space. SnapRAID provides single-drive parity, and snapraid-runner runs the sync with safety thresholds.
-
-Media and torrent data live under `/mnt/nas/data`. Most bind-mounted app configs and metadata live on the host SSD under `/opt/appdata`, including CWA’s Calibre library.
 
 ## Stacks
 
@@ -33,30 +29,34 @@ Media and torrent data live under `/mnt/nas/data`. Most bind-mounted app configs
 | [Networking](stacks/networking/compose.yaml) | AdGuard Home, NGINX Proxy Manager, Homebridge |
 | [Monitoring](stacks/monitoring/compose.yaml) | Prometheus, Grafana, Loki, Promtail, Gatus, cAdvisor, Node Exporter, Homepage, Unpoller |
 
-Plex handles video, with separate Sonarr instances for TV and anime. Shelfmark writes to `/mnt/nas/data/torrents/books`, which Calibre-Web Automated mounts as its ingest directory. CWA removes the files from that directory after processing them.
+## Observability
 
-## Deployments and networking
+Prometheus scrapes Node Exporter and cAdvisor every 15 seconds and Unpoller every 30 seconds. Grafana shows host CPU, memory, disk and network usage alongside per-container resource usage.
 
-GitHub Actions lints the stack YAML, validates the Compose files, and runs a KICS scan. On pushes to `main`, a self-hosted runner calls Komodo to redeploy the changed stacks. Each stack has a `compose.yaml` under `stacks/`, and Komodo’s own Compose file lives in `komodo/`.
+Promtail uses Docker service discovery to send container logs to Loki. Grafana queries them with LogQL using labels for container name, Compose project, Compose service, and log stream.
 
-See the [operations guide](docs/operations.md) for host rebuilds and deployment checks.
+Gatus runs HTTP checks and verifies local DNS resolution through AdGuard Home. It sends failure and recovery alerts to Discord. Grafana also alerts there on disk usage above 80%, memory usage above 85%, and container availability.
 
-AdGuard Home handles local DNS, and NGINX Proxy Manager handles reverse proxying and TLS termination. NGINX Proxy Manager and selected services share the external Docker network named `proxy`. AdGuard Home, Homebridge, and several monitoring services use host networking.
+## Dashboards
 
-Stack `.env` files are gitignored and managed on the host. The `.env.example` files document variables where provided. Host access uses SSH keys, and UFW handles the firewall.
+| Grafana | Gatus |
+| --- | --- |
+| ![Grafana dashboard with resource gauges and time-series graphs](docs/screenshots/grafana-node-exporter.png) | ![Gatus dashboard with service status cards and recent check results](docs/screenshots/gatus.png) |
+| Grafana dashboard showing host CPU load, memory and swap usage, network traffic, and disk usage. | Service status, response times, and recent check history. |
 
-## Monitoring
+## Infrastructure
 
-Gatus is where I check what’s up. Its HTTP checks are grouped by stack in [gatus/config.yaml](stacks/monitoring/gatus/config.yaml), and it sends failure and recovery alerts to Discord.
+GitHub Actions lints the stack YAML, validates the Compose files, and runs a KICS scan. On a push to `main`, a self-hosted runner asks Komodo to deploy the changed stacks and waits for the results.
 
-Prometheus is configured to scrape Node Exporter and cAdvisor every 15 seconds and Unpoller every 30 seconds. I use Grafana to check host CPU, memory, disk and network usage, as well as per-container resource usage. Grafana also sends Discord alerts for disk usage above 80%, memory usage above 85%, and container availability.
+AdGuard Home handles local DNS. NGINX Proxy Manager terminates TLS and reaches selected services over the shared `proxy` Docker network. AdGuard Home, Homebridge, and several monitoring services use host networking.
 
-Promtail discovers containers through Docker and ships their logs to Loki. In Grafana, I can query them with LogQL and filter by container, Compose project, Compose service, or log stream.
+Host access uses SSH keys and UFW handles the firewall. Stack `.env` files are gitignored and managed on the host, with `.env.example` files as references.
 
-<p align="center">
-  <img src="docs/screenshots/grafana-node-exporter.png" width="49%" alt="Grafana host metrics dashboard"/>
-  <img src="docs/screenshots/gatus.png" width="49%" alt="Gatus service status dashboard"/>
-</p>
+## Storage
+
+mergerFS pools the disks at `/mnt/nas` with most-free-space allocation. SnapRAID provides single-drive parity, and snapraid-runner handles syncs with safety thresholds. Media and downloads live under `/mnt/nas/data`. Most app configs and metadata live on the host SSD at `/opt/appdata`.
+
+The [operations guide](docs/operations.md) covers host rebuilds, volume recovery, and deployment checks.
 
 ## Roadmap
 
