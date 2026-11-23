@@ -23,25 +23,6 @@ services:
     restart: unless-stopped
     networks: [proxy]
 
-  jellyfin:
-    image: lscr.io/linuxserver/jellyfin:latest
-    container_name: jellyfin
-    environment:
-      - PUID=1000
-      - PGID=1000
-      - TZ=America/Chicago
-      - DOCKER_MODS=linuxserver/mods:jellyfin-opencl-intel  # optional, set to enable hardware acceleration for Intel
-    volumes:
-      - /opt/appdata/jellyfin:/config
-      - /opt/appdata/jellyfin/cache:/cache
-      - /mnt/nas/data/media:/media:ro
-    devices:
-      - /dev/dri:/dev/dri
-    ports:
-      - 8096:8096
-    restart: unless-stopped
-    networks: [proxy]
-
   plexautolanguages:
     cap_drop:
       - ALL
@@ -57,20 +38,6 @@ services:
     volumes:
       - /opt/appdata/plexautolanguages:/config
     restart: unless-stopped
-
-  watchstate:
-    cap_drop:
-      - ALL
-    image: ghcr.io/arabcoders/watchstate:latest
-    # To change the user/group id associated with the tool change the following line.
-    user: "0:0"
-    container_name: watchstate
-    restart: unless-stopped
-    ports:
-      - "8082:8080"
-    volumes:
-      - /opt/appdata/watchstate:/config:rw
-    networks: [proxy]
 
 networks:
   proxy:

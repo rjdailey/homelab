@@ -100,15 +100,6 @@ endpoints:
     alerts:
       - type: discord
 
-  - name: Jellyfin
-    group: Media
-    url: http://192.168.1.35:8096/health
-    interval: 60s
-    conditions:
-      - "[STATUS] == 200"
-    alerts:
-      - type: discord
-
   - name: Seerr
     group: Media
     url: http://192.168.1.35:5055/api/v1/status

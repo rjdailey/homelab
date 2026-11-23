@@ -48,11 +48,6 @@
           url: http://192.168.1.35:32400
           key: {{HOMEPAGE_VAR_PLEX_TOKEN}}
 
-    - Jellyfin:
-        icon: jellyfin
-        href: http://jellyfin.home/
-        description: Media server
-
     - Seerr:
         icon: jellyseerr
         href: http://seerr.home/
