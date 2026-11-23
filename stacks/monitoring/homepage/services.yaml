@@ -11,7 +11,7 @@
 
     - NGINX Proxy Manager:
         icon: nginx-proxy-manager
-        href: http://nginx.home/
+        href: http://npm.home/
         description: Reverse proxy & SSL
 
     - Grafana:

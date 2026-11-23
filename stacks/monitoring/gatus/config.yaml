@@ -175,7 +175,7 @@ endpoints:
 
   - name: Shelfmark
     group: Downloads
-    url: http://192.168.1.35:8084
+    url: http://192.168.1.35:8082
     interval: 60s
     conditions:
       - "[STATUS] == 200"
