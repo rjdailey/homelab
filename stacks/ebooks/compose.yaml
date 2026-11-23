@@ -51,9 +51,26 @@ services:
     restart: unless-stopped
     volumes:
       - /mnt/nas/data/torrents/books:/books # Default destination for book downloads
+      - /mnt/nas/data/media/audiobooks:/audiobooks
       - /opt/appdata/shelfmark:/config # App configuration
       # Required for torrent / usenet - path must match your download client's volume exactly
-      - /mnt/nas/data/torrents:/data/downloads
+      - /mnt/nas/data/torrents:/downloads
+      - /opt/appdata/calibre-web-automated/library:/calibre-library:ro
+    networks: [proxy]
+
+  audiobookshelf:
+    image: ghcr.io/advplyr/audiobookshelf:latest
+    container_name: audiobookshelf
+    ports:
+      - 13378:80
+    volumes:
+      - /opt/appdata/audiobookshelf:/config
+      - /opt/appdata/audiobookshelf/metadata:/metadata
+      - /mnt/nas/data/media/audiobooks:/audiobooks
+      - /mnt/nas/data/media/podcasts:/podcasts
+    environment:
+      - TZ=America/Chicago
+    restart: unless-stopped
     networks: [proxy]
 
 networks:

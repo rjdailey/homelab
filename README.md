@@ -23,7 +23,7 @@ A single-node Debian homelab for media, ebooks, and home networking. The stacks 
 | Stack | Services |
 | --- | --- |
 | [Media](stacks/media/compose.yaml) | Plex, PlexAutoLanguages |
-| [Ebooks](stacks/ebooks/compose.yaml) | Calibre-Web Automated, Shelfmark |
+| [Ebooks](stacks/ebooks/compose.yaml) | Calibre-Web Automated, Shelfmark, Audiobookshelf |
 | [Arr](stacks/arr/compose.yaml) | Sonarr (TV and anime), Radarr, Seerr, Agregarr, Profilarr |
 | [Downloads](stacks/downloads/compose.yaml) | RDTClient, Decypharr, Prowlarr, FlareSolverr |
 | [Networking](stacks/networking/compose.yaml) | AdGuard Home, NGINX Proxy Manager, Homebridge |
